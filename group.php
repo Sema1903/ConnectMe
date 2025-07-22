@@ -230,6 +230,8 @@ require_once 'includes/header.php';
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+    padding-top: 30px;
 }
 
 .group-cover {
@@ -241,7 +243,6 @@ require_once 'includes/header.php';
 .group-info-container {
     position: relative;
     padding: 0 30px 30px;
-    background: white;
 }
 
 .group-info {
@@ -341,6 +342,8 @@ require_once 'includes/header.php';
 .join-btn {
     background: var(--primary-color);
     color: white;
+    width: 160px;
+    height: 50px;
 }
 
 .join-btn:hover {
@@ -350,6 +353,8 @@ require_once 'includes/header.php';
 .leave-btn {
     background: #f0f2f5;
     color: #333;
+    width: 140px;
+    height: 50px;
 }
 
 .leave-btn:hover {
@@ -360,6 +365,9 @@ require_once 'includes/header.php';
     background: #e7f3ff;
     color: var(--primary-color);
     text-decoration: none;
+    margin-left: 50px;
+    width: 140px;
+    height: 50px;
 }
 
 .manage-btn:hover {
@@ -462,8 +470,8 @@ require_once 'includes/header.php';
 }
 
 .member-item img {
-    width: 100%;
-    height: 80%;
+    width: 65px;
+    height: 65px;
     object-fit: cover;
     transition: transform 0.2s;
 }
@@ -476,8 +484,8 @@ require_once 'includes/header.php';
     position: absolute;
     bottom: 5px;
     right: 5px;
-    width: 10px;
-    height: 10px;
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
     background: #31a24c;
     border: 2px solid white;
@@ -521,8 +529,8 @@ require_once 'includes/header.php';
 }
 
 .post-author img {
-    width: 100%;
-    height: 100%;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -615,11 +623,17 @@ require_once 'includes/header.php';
     .group-sidebar {
         width: 100%;
     }
-    
+    .group-header{
+        height: 350px;
+        padding-top: 150px;
+    }
     .group-info {
         flex-direction: column;
         align-items: flex-start;
         margin-top: -120px;
+    }
+    .manage-btn{
+        margin-left: 10px;
     }
     
     .group-details {
@@ -629,6 +643,12 @@ require_once 'includes/header.php';
     
     .group-title {
         font-size: 1.8rem;
+    }
+    .member-item img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        transition: transform 0.2s;
     }
 }
 

@@ -19,7 +19,7 @@ try {
             full_name TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
             avatar TEXT DEFAULT 'unknown.png',
-            bio TEXT DEFAULT 'Привет, я использую ConnectMe',
+            bio TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
         
@@ -137,6 +137,16 @@ try {
                 uploaded_at DATETIME,
                 FOREIGN KEY (user_id) REFERENCES users(id)
             );
+            CREATE TABLE IF NOT EXISTS group_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                group_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                action_type TEXT NOT NULL,
+                action_data TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (group_id) REFERENCES groups(id),
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            );
     ");
 } catch (Exception $e) {
     die("Ошибка подключения к базе данных: " . $e->getMessage());
@@ -208,7 +218,7 @@ function initializeDemoData($db) {
     }
 }
 
-//initializeDemoData($db);
+initializeDemoData($db);
 
 // Функция для получения текущего пользователя
 function getCurrentUser($db) {

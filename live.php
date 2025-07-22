@@ -5,171 +5,254 @@ require_once 'includes/functions.php';
 
 $user = getCurrentUser($db);
 if (!$user) {
-    header('Location: /login.php');
+    header('Location: login.php');
     exit;
 }
 
-$streams = getLiveStreams($db);
+// Получаем активные трансляции
+$streams = $db->query("SELECT * FROM live_streams WHERE is_live = 1");
 
-// Проверяем, есть ли у пользователя активный стрим
-$user_stream = null;
+// Проверяем активный стрим пользователя
 $stmt = $db->prepare("SELECT * FROM live_streams WHERE user_id = ? AND is_live = 1");
 $stmt->bindValue(1, $user['id'], SQLITE3_INTEGER);
-$result = $stmt->execute();
-$user_stream = $result->fetchArray(SQLITE3_ASSOC);
-
-require_once 'includes/header.php';
+$user_stream = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
 ?>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прямые трансляции</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .stream-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 */
+            background: #000;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background: #4285f4;
+            color: white;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .stream-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .stream-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stream-thumbnail {
+            position: relative;
+            padding-bottom: 56.25%;
+            background: #222;
+        }
+        .live-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: red;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input, textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <?php if ($user_stream): ?>
+            <div class="stream-section">
+                <h1>Ваш прямой эфир</h1>
+                <div class="video-container">
+                    <video id="streamPreview" autoplay muted playsinline></video>
+                </div>
+                <div>
+                    <h2><?= htmlspecialchars($user_stream['title']) ?></h2>
+                    <p><?= htmlspecialchars($user_stream['description']) ?></p>
+                    <button id="stopStream" class="btn btn-danger">Завершить трансляцию</button>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="stream-section">
+                <h1>Начать трансляцию</h1>
+                <form id="startStreamForm">
+                    <div>
+                        <label>Название трансляции</label>
+                        <input type="text" name="title" required>
+                    </div>
+                    <div>
+                        <label>Описание</label>
+                        <textarea name="description"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Начать трансляцию</button>
+                </form>
+            </div>
+        <?php endif; ?>
 
-<main class="main-content" style="width: 100%;">
-    <?php if ($user_stream): ?>
-        <!-- Пользователь ведет стрим -->
-        <div class="feed">
-            <h1 style="font-size: 1.5rem; margin-bottom: 20px;">
-                Ваш прямой эфир
-            </h1>
-            
-            <div style="background-color: #000; border-radius: 10px; position: relative; padding-top: 56.25%;">
-                <video id="live-stream" controls style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 10px;"></video>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <h2 style="font-size: 1.2rem; margin-bottom: 10px;"><?= htmlspecialchars($user_stream['title']) ?></h2>
-                <p><?= htmlspecialchars($user_stream['description']) ?></p>
-                
-                <div style="margin-top: 20px;">
-                    <button id="stop-stream-btn" class="post-action-btn" style="background-color: var(--accent-color); color: white;">
-                        <i class="fas fa-stop"></i> Завершить трансляцию
-                    </button>
+        <div class="stream-section">
+            <h1>Активные трансляции</h1>
+            <?php if ($streams->fetchArray()): ?>
+                <div class="stream-grid">
+                    <?php 
+                    $streams->reset(); // Сброс указателя для повторного чтения
+                    while ($stream = $streams->fetchArray(SQLITE3_ASSOC)): 
+                        $streamer = getUserById($db, $stream['user_id']);
+                    ?>
+                        <a href="watch.php?id=<?= $stream['id'] ?>" class="stream-card">
+                            <div class="stream-thumbnail">
+                                <div class="live-badge">LIVE</div>
+                            </div>
+                            <div style="padding: 15px;">
+                                <h3><?= htmlspecialchars($stream['title']) ?></h3>
+                                <p><?= htmlspecialchars($streamer['username'] ?? 'Unknown') ?></p>
+                            </div>
+                        </a>
+                    <?php endwhile; ?>
                 </div>
-            </div>
+            <?php else: ?>
+                <p>Сейчас нет активных трансляций</p>
+            <?php endif; ?>
         </div>
-        
-        <script>
-        // Инициализация трансляции (упрощенная версия)
-        document.addEventListener('DOMContentLoaded', function() {
-            const videoElement = document.getElementById('live-stream');
-            
-            // В реальном приложении здесь было бы подключение к серверу трансляции
-            // Например, через WebRTC или HLS
-            
-            // Для демонстрации просто показываем сообщение
-            videoElement.innerHTML = `
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; background-color: rgba(0,0,0,0.7);">
-                    <i class="fas fa-broadcast-tower" style="font-size: 3rem; margin-bottom: 20px;"></i>
-                    <div style="font-size: 1.5rem;">Идет трансляция</div>
-                </div>
-            `;
-            
-            // Обработка завершения трансляции
-            document.getElementById('stop-stream-btn').addEventListener('click', function() {
-                if (confirm('Вы уверены, что хотите завершить трансляцию?')) {
-                    fetch('/actions/stop_stream.php', {
-                        method: 'POST'
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.reload();
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-                }
-            });
-        });
-        </script>
-    <?php else: ?>
-        <!-- Пользователь может начать стрим -->
-        <div class="feed">
-            <h1 style="font-size: 1.5rem; margin-bottom: 20px;">
-                Начать прямой эфир
-            </h1>
-            
-            <form id="start-stream-form" style="margin-top: 20px;">
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Название трансляции</label>
-                    <input type="text" name="title" placeholder="Введите название" style="width: 100%; padding: 10px 15px; border-radius: 8px; border: 1px solid #ddd; outline: none;" required>
-                </div>
-                
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Описание</label>
-                    <textarea name="description" placeholder="Введите описание" style="width: 100%; padding: 10px 15px; border-radius: 8px; border: 1px solid #ddd; outline: none; min-height: 100px;"></textarea>
-                </div>
-                
-                <button type="submit" class="post-action-btn" style="background-color: var(--accent-color); color: white;">
-                    <i class="fas fa-broadcast-tower"></i> Начать трансляцию
-                </button>
-            </form>
-        </div>
-        
-        <script>
-        document.getElementById('start-stream-form').addEventListener('submit', function(e) {
+    </div>
+
+    <script>
+        // Обработка формы начала трансляции
+        document.getElementById('startStreamForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
-            const data = {
-                title: formData.get('title'),
-                description: formData.get('description')
+            const formData = {
+                title: this.title.value,
+                description: this.description.value
             };
             
-            fetch('/actions/start_stream.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                const response = await fetch('actions/start_stream.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
                 if (data.success) {
                     window.location.reload();
                 } else {
                     alert(data.message || 'Ошибка при запуске трансляции');
                 }
-            })
-            .catch(error => console.error('Error:', error));
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Ошибка соединения');
+            }
         });
-        </script>
-    <?php endif; ?>
-    
-    <!-- Активные трансляции -->
-    <div class="feed" style="margin-top: 30px;">
-        <h1 style="font-size: 1.5rem; margin-bottom: 20px;">
-            Активные трансляции
-        </h1>
-        
-        <?php if (!empty($streams)): ?>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-                <?php foreach ($streams as $stream): 
-                    $streamer = getUserById($db, $stream['user_id']);
-                ?>
-                    <a href="/watch_stream.php?id=<?= $stream['id'] ?>" style="text-decoration: none; color: inherit;">
-                        <div style="background-color: #000; border-radius: 10px; position: relative; padding-top: 56.25%;">
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; background-color: rgba(0,0,0,0.7);">
-                                <i class="fas fa-broadcast-tower" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                <div style="font-size: 1.2rem;">Идет трансляция</div>
-                            </div>
-                            <div style="position: absolute; top: 10px; left: 10px; background-color: var(--accent-color); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">
-                                LIVE
-                            </div>
-                        </div>
-                        <div style="margin-top: 10px; display: flex;">
-                            <img src="assets/images/avatars/<?= $streamer['avatar'] ?>" alt="Streamer" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
-                            <div>
-                                <div style="font-weight: 600;"><?= htmlspecialchars($stream['title']) ?></div>
-                                <div style="font-size: 0.9rem; color: var(--gray-color);"><?= htmlspecialchars($streamer['full_name']) ?></div>
-                            </div>
-                        </div>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-        <?php else: ?>
-            <div style="text-align: center; padding: 30px; color: var(--gray-color);">
-                <i class="fas fa-broadcast-tower" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                <div style="font-size: 1.2rem;">Сейчас нет активных трансляций</div>
-            </div>
-        <?php endif; ?>
-    </div>
-</main>
 
-<?php require_once 'includes/footer.php'; ?>
+        // Обработка кнопки завершения трансляции
+        document.getElementById('stopStream')?.addEventListener('click', async function() {
+            if (confirm('Вы уверены, что хотите завершить трансляцию?')) {
+                try {
+                    const response = await fetch('actions/stop_stream.php');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert('Ошибка при завершении трансляции');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Ошибка соединения');
+                }
+            }
+        });
+
+        // Инициализация трансляции (для стримера)
+        <?php if ($user_stream): ?>
+        async function initStream() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                });
+                const videoElement = document.getElementById('streamPreview');
+                videoElement.srcObject = stream;
+                
+                console.log('Трансляция начата с ключом:', '<?= $user_stream['stream_key'] ?>');
+                
+                // В реальном приложении здесь будет отправка на RTMP сервер
+                // Например: new RTMPPublisher(stream, 'rtmp://yourserver/live/<?= $user_stream['stream_key'] ?>');
+                
+            } catch (error) {
+                console.error('Ошибка доступа к медиаустройствам:', error);
+                alert('Не удалось получить доступ к камере/микрофону');
+            }
+        }
+        
+        // Проверяем поддержку getUserMedia
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            initStream();
+        } else {
+            alert('Ваш браузер не поддерживает доступ к камере');
+        }
+        <?php endif; ?>
+    </script>
+</body>
+</html>

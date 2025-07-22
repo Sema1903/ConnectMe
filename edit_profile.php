@@ -26,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Обработка аватарки
         $avatar = $user['avatar'];
         if (!empty($_FILES['avatar']['name'])) {
-            //$upload_dir = realpath(__DIR__ . '/../assets/images/avatars/') . '/';
-            $upload_dir = realpath('assets/images/avatars/') . '/';
+            $upload_dir = realpath(__DIR__ . '/../htdocs/assets/images/avatars/') . '/';
+            
             // Создаем папку, если её нет
             if (!file_exists($upload_dir)) {
                 mkdir($upload_dir, 0755, true);

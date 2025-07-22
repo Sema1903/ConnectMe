@@ -80,7 +80,7 @@ require_once('includes/header.php');
 
 .profile-cover {
     width: 100%;
-    height: 100%;
+    height: 50%;
     object-fit: cover;
 }
 
@@ -88,6 +88,7 @@ require_once('includes/header.php');
     display: flex;
     padding: 20px;
     position: relative;
+    height: 100px;
 }
 
 .avatar-container {
@@ -317,6 +318,9 @@ require_once('includes/header.php');
 
 /* Адаптивность */
 @media (max-width: 768px) {
+    .profile-header{
+        height: 450px;
+    }
     .cover-container {
         height: 120px;
     }
