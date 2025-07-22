@@ -14,15 +14,17 @@
 <strong>Database</strong> SQLite3
 <strong>Analytics</strong> Python SKLearn, MatPlotLib.PyPlot, NumPy, PyTorch
 <h3>Installation</h3>
-<ul>
+<ol>
   <li>Install MAMP or LAMP (Depending on the MAMP OS for Windows and macOS, LAMP for Linux used)</li>
   <li>Clone the repository: <em>git clone https://github.com/yourname/connectme.git</em></li>
   <li>Save files in htdocs to MAMP or LAMP</li>
   <li>Launch MAMP or LAMP and open <em>http://localhost:8888</em> in your browser</li>
-</ul>
+</ol>
 <h3>How can you help our project</h3>
 <p>Go to <a href = "http://sema1903.ru/group.php?id=1">our group</a> and write your proposal or comment. In addition, we are currently holding a competition for the best comment or proposal for a place in the team of creators</p>
 <h3>Acknowledgments</h3>
-<li><strong>Tim</strong> for helping with testing</li>
-<li><strong>Darya Sosnkowski</strong> for becoming the first user</li>
-<li><strong>Цифровой Оракул</strong> for helping create the project</li>
+<ul>
+  <li><strong>Tim</strong> for helping with testing</li>
+  <li><strong>Darya Sosnkowski</strong> for becoming the first user</li>
+  <li><strong>Цифровой Оракул</strong> for helping create the project</li>
+</ul>
