@@ -9,10 +9,10 @@
 <p><strong>Technology 4: </strong>Laying music files and audio player</p>
 <p><strong>Technology 5: </strong>Live broadcasts (in beta)</p>
 <h3>Technology stack</h3>
-<strong>Frontend</strong> HTML, JS, CSS (Without using frameworks)
-<strong>Backend</strong> Pure PHP
-<strong>Database</strong> SQLite3
-<strong>Analytics</strong> Python SKLearn, MatPlotLib.PyPlot, NumPy, PyTorch
+<p><strong>Frontend</strong> HTML, JS, CSS (Without using frameworks)</p>
+<p><strong>Backend</strong> Pure PHP</p>
+<p><strong>Database</strong> SQLite3</p>
+<p><strong>Analytics</strong> Python SKLearn, MatPlotLib.PyPlot, NumPy, PyTorch</p>
 <h3>Installation</h3>
 <ol>
   <li>Install MAMP or LAMP (Depending on the MAMP OS for Windows and macOS, LAMP for Linux used)</li>
