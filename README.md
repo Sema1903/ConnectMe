@@ -16,7 +16,7 @@
 <h3>Installation</h3>
 <ol>
   <li>Install MAMP or LAMP (Depending on the MAMP OS for Windows and macOS, LAMP for Linux used)</li>
-  <li>Clone the repository: <em>git clone https://github.com/yourname/connectme.git</em></li>
+  <li>Clone the repository: <em>git clone https://github.com/Sema1903/ConnectMe.git</em></li>
   <li>Save files in htdocs to MAMP or LAMP</li>
   <li>Launch MAMP or LAMP and open <em>http://localhost:8888</em> in your browser</li>
 </ol>
