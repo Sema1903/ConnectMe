@@ -1,13 +1,13 @@
 <h1>ConnectMe</h1>
 <h2>Virtual communication platform for schoolchildren and students</h2>
 <h3>Opportunities</h3>
-<strong>An important feature: </strong>thanks to the minimal use of frameworks and third-party libraries, the site is light in weight, loads quickly and uses little power
-<strong>Unique feature: </strong>High speed and performance, caring about the privacy of each user. And also a narrow focus (schoolchildren and students)
-<strong>Technology 1: </strong>Creating posts
-<strong>Technology 2: </strong>Messenger
-<strong>Technology 3: </strong>Groups
-<strong>Technology 4: </strong>Laying music files and audio player
-<strong>Technology 5: </strong>Live broadcasts (in beta)
+<p><strong>An important feature: </strong>thanks to the minimal use of frameworks and third-party libraries, the site is light in weight, loads quickly and uses little power</p>
+<p><strong>Unique feature: </strong>High speed and performance, caring about the privacy of each user. And also a narrow focus (schoolchildren and students)</p>
+<p><strong>Technology 1: </strong>Creating posts</p>
+<p><strong>Technology 2: </strong>Messenger</p>
+<p><strong>Technology 3: </strong>Groups</p>
+<p><strong>Technology 4: </strong>Laying music files and audio player</p>
+<p><strong>Technology 5: </strong>Live broadcasts (in beta)</p>
 <h3>Technology stack</h3>
 <strong>Frontend</strong> HTML, JS, CSS (Without using frameworks)
 <strong>Backend</strong> Pure PHP
