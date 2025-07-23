@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_group'])) {
         // Обработка аватарки группы
         $avatar = 'unknown.png';
         if (!empty($_FILES['avatar']['name'])) {
-            $upload_dir = __DIR__ . '/../htdocs/assets/images/groups/';
+            $upload_dir = __DIR__ . '/../assets/images/groups/';
             if (!file_exists($upload_dir)) {
                 mkdir($upload_dir, 0755, true);
             }

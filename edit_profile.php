@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $full_name = trim($_POST['full_name'] ?? '');
     $bio = trim($_POST['bio'] ?? '');
     $email = trim($_POST['email'] ?? '');
+    $cover = trim($_POST['cover'] ?? $user['cover'] ?? '1.jpg'); // По умолчанию 1.jpg
     
     // Валидация данных
     if (empty($full_name) || empty($email)) {
@@ -61,17 +62,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Обновляем профиль, если нет ошибок
         if (empty($error)) {
-            $stmt = $db->prepare("UPDATE users SET full_name = ?, bio = ?, email = ?, avatar = ? WHERE id = ?");
+            $stmt = $db->prepare("UPDATE users SET full_name = ?, bio = ?, email = ?, avatar = ?, cover = ? WHERE id = ?");
             $stmt->bindValue(1, $full_name, SQLITE3_TEXT);
             $stmt->bindValue(2, $bio, SQLITE3_TEXT);
             $stmt->bindValue(3, $email, SQLITE3_TEXT);
             $stmt->bindValue(4, $avatar, SQLITE3_TEXT);
-            $stmt->bindValue(5, $user['id'], SQLITE3_INTEGER);
+            $stmt->bindValue(5, $cover, SQLITE3_TEXT);
+            $stmt->bindValue(6, $user['id'], SQLITE3_INTEGER);
             
             if ($stmt->execute()) {
                 $success = 'Профиль успешно обновлен';
                 // Обновляем данные в сессии
                 $_SESSION['user_avatar'] = $avatar;
+                $_SESSION['user_cover'] = $cover;
                 $user = getCurrentUser($db); // Обновляем данные пользователя
             } else {
                 $error = 'Ошибка при обновлении профиля';
@@ -110,6 +113,18 @@ require_once 'includes/header.php';
             </div>
             
             <div class="form-group">
+                <label>Обложка профиля</label>
+                <div class="cover-selector">
+                    <?php for ($i = 1; $i <= 10; $i++): ?>
+                        <label class="cover-option">
+                            <input type="radio" name="cover" value="<?= $i ?>.jpg" <?= ($user['cover'] ?? '1.jpg') == "$i.jpg" ? 'checked' : '' ?>>
+                            <img src="/assets/images/covers/<?= $i ?>.jpg" alt="Cover <?= $i ?>">
+                        </label>
+                    <?php endfor; ?>
+                </div>
+            </div>
+            
+            <div class="form-group">
                 <label for="fullName">Полное имя</label>
                 <input type="text" id="fullName" name="full_name" value="<?= htmlspecialchars($user['full_name']) ?>" required>
             </div>
@@ -130,6 +145,53 @@ require_once 'includes/header.php';
         </form>
     </div>
 </main>
+
+<style>
+/* Стили для выбора обложки */
+.cover-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.cover-option {
+    position: relative;
+    width: calc(20% - 10px);
+    cursor: pointer;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.cover-option:hover {
+    border-color: var(--primary-color);
+}
+
+.cover-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.cover-option input[type="radio"]:checked + img {
+    border: 2px solid var(--primary-color);
+}
+
+.cover-option img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 2px solid transparent;
+}
+
+.cover-option input[type="radio"]:checked + img {
+    border-color: var(--primary-color);
+}
+</style>
 
 <script>
 document.getElementById('avatarInput').addEventListener('change', function(e) {

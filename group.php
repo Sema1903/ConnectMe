@@ -650,6 +650,7 @@ require_once 'includes/header.php';
         object-fit: cover;
         transition: transform 0.2s;
     }
+
 }
 
 @media (max-width: 576px) {

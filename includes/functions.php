@@ -110,12 +110,13 @@ function getOnlineUsers($db) {
     return $users;
 }
 
-function addPost($db, $user_id, $content, $image = null) {
-    // Создаем пост
-    $stmt = $db->prepare("INSERT INTO posts (user_id, content, image) VALUES (?, ?, ?)");
-    $stmt->bindValue(1, $user_id, SQLITE3_INTEGER);
-    $stmt->bindValue(2, $content, SQLITE3_TEXT);
-    $stmt->bindValue(3, $image, SQLITE3_TEXT);
+function addPost($db, $user_id, $content, $image = null, $feeling = null) {
+    $stmt = $db->prepare("INSERT INTO posts (user_id, content, image, feeling, created_at) VALUES (:user_id, :content, :image, :feeling, datetime('now'))");
+    $stmt->bindValue(':user_id', $user_id, SQLITE3_INTEGER);
+    $stmt->bindValue(':content', $content, SQLITE3_TEXT);
+    $stmt->bindValue(':image', $image, SQLITE3_TEXT);
+    $stmt->bindValue(':feeling', $feeling, SQLITE3_TEXT);
+    
     $result = $stmt->execute();
     
     if ($result) {

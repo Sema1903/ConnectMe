@@ -71,12 +71,6 @@ require_once 'includes/header.php';
                             <span>Музыка</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="/live.php">
-                            <i class="fas fa-video"></i>
-                            <span>Видео</span>
-                        </a>
-                    </li>
                 </ul>
             </div>
         <?php endif; ?>
@@ -104,16 +98,42 @@ require_once 'includes/header.php';
                         <img src="assets/images/avatars/<?= $user['avatar'] ?>" alt="User" class="post-author-avatar">
                         <input type="text" name="content" placeholder="Что у вас нового, <?= explode(' ', $user['full_name'])[0] ?>?" class="post-input-field" required>
                     </div>
+                    <!-- В блоке create-post замените кнопку feeling-action на это: -->
                     <div class="post-actions">
                         <label class="post-action photo-action">
                             <i class="fas fa-images"></i>
                             <span class="action-text">Фото/Видео</span>
                             <input type="file" name="image" accept="image/*" class="file-input">
                         </label>
-                        <button type="button" class="post-action feeling-action">
-                            <i class="fas fa-smile"></i>
-                            <span class="action-text">Чувства</span>
-                        </button>
+                        <div class="feeling-container">
+                            <button type="button" class="post-action feeling-action" id="feeling-btn">
+                                <i class="fas fa-smile"></i>
+                                <span class="action-text">Чувства</span>
+                            </button>
+                            <div class="feeling-dropdown" id="feeling-dropdown">
+                                <div class="feeling-options">
+                                    <button type="button" class="feeling-option" data-feeling="happy">
+                                        <i class="fas fa-smile-beam"></i> Счастлив
+                                    </button>
+                                    <button type="button" class="feeling-option" data-feeling="sad">
+                                        <i class="fas fa-sad-tear"></i> Грустный
+                                    </button>
+                                    <button type="button" class="feeling-option" data-feeling="angry">
+                                        <i class="fas fa-angry"></i> Злой
+                                    </button>
+                                    <button type="button" class="feeling-option" data-feeling="loved">
+                                        <i class="fas fa-heart"></i> Влюблён
+                                    </button>
+                                    <button type="button" class="feeling-option" data-feeling="tired">
+                                        <i class="fas fa-tired"></i> Уставший
+                                    </button>
+                                    <button type="button" class="feeling-option" data-feeling="blessed">
+                                        <i class="fas fa-pray"></i> Благословлён
+                                    </button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="feeling" id="feeling-input">
+                        </div>
                         <button type="submit" class="post-submit">
                             <i class="fas fa-paper-plane"></i>
                             <span class="submit-text">Опубликовать</span>
@@ -139,7 +159,31 @@ require_once 'includes/header.php';
                     </div>
                     
                     <div class="post-content">
-                        <p class="post-text"><?= processMentions(nl2br(htmlspecialchars($post['content'])), $db) ?></p> 
+                        <p class="post-text"><?= processMentions(nl2br(htmlspecialchars($post['content'])), $db) ?></p>
+                        <?php if ($post['feeling']): ?>
+                            <div class="post-feeling">
+                                <?php 
+                                    $feeling_icons = [
+                                        'happy' => 'fa-smile-beam',
+                                        'sad' => 'fa-sad-tear',
+                                        'angry' => 'fa-angry',
+                                        'loved' => 'fa-heart',
+                                        'tired' => 'fa-tired',
+                                        'blessed' => 'fa-pray'
+                                    ];
+                                    $feeling_texts = [
+                                        'happy' => 'чувствует себя счастливым',
+                                        'sad' => 'чувствует себя грустным',
+                                        'angry' => 'чувствует себя злым',
+                                        'loved' => 'чувствует себя влюблённым',
+                                        'tired' => 'чувствует себя уставшим',
+                                        'blessed' => 'чувствует себя благословлённым'
+                                    ];
+                                ?>
+                                <i class="fas <?= $feeling_icons[$post['feeling']] ?>"></i>
+                                <span><?= $feeling_texts[$post['feeling']] ?></span>
+                            </div>
+                        <?php endif; ?>
                         <?php if ($post['image']): ?>
                             <img src="/assets/images/posts/<?= $post['image'] ?>" alt="Post Image" class="post-image">
                         <?php endif; ?>
@@ -749,6 +793,79 @@ require_once 'includes/header.php';
         width: 100%;
     }
 }
+.feeling-container {
+    position: relative;
+}
+
+.feeling-dropdown {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 10px;
+    z-index: 100;
+    display: none;
+    width: 200px;
+}
+
+.feeling-dropdown.show {
+    display: block;
+}
+
+.feeling-options {
+    display: flex;
+    flex-direction: column;
+}
+
+.feeling-option {
+    padding: 8px 12px;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.feeling-option:hover {
+    background: #f0f2f5;
+}
+
+.feeling-option i {
+    margin-right: 8px;
+    width: 20px;
+    text-align: center;
+}
+
+.selected-feeling {
+    display: inline-flex;
+    align-items: center;
+    background: #f0f2f5;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    font-size: 0.9rem;
+}
+
+.selected-feeling i {
+    margin-right: 4px;
+}
+.post-feeling {
+    display: inline-flex;
+    align-items: center;
+    background: #f0f2f5;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #65676b;
+}
+
+.post-feeling i {
+    margin-right: 6px;
+    color: var(--primary-color);
+}
 
 @media (max-width: 768px) {
     .post-action span, .post-action-btn span, .post-submit span {
@@ -798,6 +915,40 @@ require_once 'includes/header.php';
             /@([a-zA-Z0-9_]+)/g, 
             '<a href="/profile.php?username=$1" class="mention">@$1</a>'
         );
+    });
+});
+// Обработка выбора чувств
+const feelingBtn = document.getElementById('feeling-btn');
+const feelingDropdown = document.getElementById('feeling-dropdown');
+const feelingInput = document.getElementById('feeling-input');
+
+feelingBtn.addEventListener('click', function() {
+    feelingDropdown.classList.toggle('show');
+});
+
+// Закрываем dropdown при клике вне его
+document.addEventListener('click', function(e) {
+    if (!feelingBtn.contains(e.target) && !feelingDropdown.contains(e.target)) {
+        feelingDropdown.classList.remove('show');
+    }
+});
+
+// Обработка выбора чувства
+document.querySelectorAll('.feeling-option').forEach(option => {
+    option.addEventListener('click', function() {
+        const feeling = this.getAttribute('data-feeling');
+        const iconClass = this.querySelector('i').className;
+        const text = this.textContent.trim();
+        
+        feelingInput.value = feeling;
+        
+        // Обновляем кнопку
+        feelingBtn.innerHTML = `
+            <i class="${iconClass}"></i>
+            <span class="action-text">${text}</span>
+        `;
+        
+        feelingDropdown.classList.remove('show');
     });
 });
 </script>

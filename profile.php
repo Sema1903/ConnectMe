@@ -70,17 +70,18 @@ require_once('includes/header.php');
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     overflow: hidden;
     margin-bottom: 20px;
+    height: 400px;
 }
 
 .cover-container {
     position: relative;
-    height: 235px;
+    height: 400px;
     overflow: hidden;
 }
 
 .profile-cover {
     width: 100%;
-    height: 50%;
+    height: 55%;
     object-fit: cover;
 }
 
@@ -88,7 +89,7 @@ require_once('includes/header.php');
     display: flex;
     padding: 20px;
     position: relative;
-    height: 100px;
+    height: 0px;
 }
 
 .avatar-container {
@@ -319,10 +320,10 @@ require_once('includes/header.php');
 /* Адаптивность */
 @media (max-width: 768px) {
     .profile-header{
-        height: 450px;
+        height: 550px;
     }
     .cover-container {
-        height: 120px;
+        height: 300px;
     }
     .profile-container {
         flex-direction: column;
@@ -335,6 +336,7 @@ require_once('includes/header.php');
     .profile-info {
         flex-direction: column;
         text-align: center;
+        margin-top: -150px;
     }
     
     .avatar-container {
@@ -451,9 +453,6 @@ require_once('includes/header.php');
                      alt="Обложка профиля"
                      onerror="this.src='/assets/images/covers/default.jpg'">
                 <?php if ($is_own_profile): ?>
-                <button class="edit-cover-btn">
-                    <i class="fas fa-camera"></i> Изменить обложку
-                </button>
                 <?php endif; ?>
             </div>
             <div class="profile-info">

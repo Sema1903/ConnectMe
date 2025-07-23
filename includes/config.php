@@ -83,7 +83,6 @@ try {
             FOREIGN KEY (user_id) REFERENCES users(id),
             UNIQUE(group_id, user_id)
         );
-        
         CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             sender_id INTEGER NOT NULL,
@@ -94,7 +93,7 @@ try {
             FOREIGN KEY (sender_id) REFERENCES users(id),
             FOREIGN KEY (receiver_id) REFERENCES users(id)
         );
-        
+
         CREATE TABLE IF NOT EXISTS live_streams (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -145,6 +144,15 @@ try {
                 action_data TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (group_id) REFERENCES groups(id),
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            );
+            CREATE TABLE IF NOT EXISTS chat_messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                stream_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                message TEXT NOT NULL,
+                created_at DATETIME NOT NULL,
+                FOREIGN KEY (stream_id) REFERENCES live_streams(id),
                 FOREIGN KEY (user_id) REFERENCES users(id)
             );
     ");

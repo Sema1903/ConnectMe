@@ -79,7 +79,7 @@ function loadComments(postId) {
                 commentElement.style.marginBottom = '10px';
                 
                 commentElement.innerHTML = `
-                    <img src="/assets/images/avatars/${comment.avatar}" alt="User" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;">
+                    <img src="assets/images/avatars/${comment.avatar}" alt="User" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;">
                     <div>
                         <div style="font-weight: 600;">${comment.full_name}</div>
                         <div>${comment.content}</div>
