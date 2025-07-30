@@ -5,7 +5,7 @@ require_once 'includes/functions.php';
 
 $user = getCurrentUser($db);
 $page = $_GET['page'] ?? 1;
-$limit = 5;
+$limit = 10;
 $offset = ($page - 1) * $limit;
 $posts = getPosts($db, $limit, $offset);
 $friends = $user ? getFriends($db, $user['id']) : [];
@@ -952,4 +952,87 @@ document.querySelectorAll('.feeling-option').forEach(option => {
     });
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let isLoading = false;
+    let currentPage = 1;
+    const postsFeed = document.querySelector('.posts-feed');
+    
+    window.addEventListener('scroll', function() {
+        // Проверяем, достигли ли мы нижней части страницы
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500 && !isLoading) {
+            loadMorePosts();
+        }
+    });
+    
+    function loadMorePosts() {
+        isLoading = true;
+        currentPage++;
+        
+        // Показываем индикатор загрузки
+        const loader = document.createElement('div');
+        loader.className = 'loader';
+        loader.innerHTML = '<div class="spinner"></div>';
+        postsFeed.appendChild(loader);
+        
+        // Загружаем новые посты через AJAX
+        fetch(`/actions/load_posts.php?page=${currentPage}`)
+            .then(response => response.text())
+            .then(html => {
+                loader.remove();
+                
+                if (html.trim() !== '') {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+                    
+                    // Добавляем новые посты в ленту
+                    const newPosts = tempDiv.querySelectorAll('.post-card');
+                    newPosts.forEach(post => {
+                        postsFeed.appendChild(post);
+                    });
+                    
+                    // Инициализируем обработчики для новых постов
+                    initPostHandlers();
+                }
+                
+                isLoading = false;
+            })
+            .catch(error => {
+                console.error('Error loading more posts:', error);
+                loader.remove();
+                isLoading = false;
+            });
+    }
+    
+    function initPostHandlers() {
+        // Инициализация обработчиков событий для новых постов
+        // (например, для кнопок лайков, комментариев и т.д.)
+    }
+    
+    // Инициализация обработчиков при первой загрузке
+    initPostHandlers();
+});
+</script>
+
+<style>
+.loader {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
 <?php require_once 'includes/footer.php'; ?>

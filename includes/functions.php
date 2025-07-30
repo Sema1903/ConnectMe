@@ -3,27 +3,7 @@ require_once 'config.php';
 function validateUserId($id) {
     return is_numeric($id) && $id > 0;
 }
-/*function getPosts($db, $limit = 10, $offset = 0) {
-    $stmt = $db->prepare("
-        SELECT p.*, u.username, u.full_name, u.avatar, 
-               (SELECT COUNT(*) FROM likes WHERE post_id = p.id) as likes_count,
-               (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count
-        FROM posts p
-        JOIN users u ON p.user_id = u.id
-        ORDER BY p.created_at DESC
-        LIMIT ? OFFSET ?
-    ");
-    $stmt->bindValue(1, $limit, SQLITE3_INTEGER);
-    $stmt->bindValue(2, $offset, SQLITE3_INTEGER);
-    $result = $stmt->execute();
-    
-    $posts = [];
-    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-        $posts[] = $row;
-    }
-    
-    return $posts;
-}*/
+
 
 function getUserById($db, $id) {
     $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");

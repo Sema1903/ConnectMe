@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($pageTitle) ? $pageTitle : 'ConnectMe' ?></title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
 /* Мобильное меню */
@@ -68,6 +68,7 @@
     </style>
 </head>
 <body>
+    <?php require_once __DIR__ . '/auth.php';?>
     <!-- Header/Navbar -->
     <header>
         <div class="navbar">
@@ -125,6 +126,12 @@
                     <a href="/notifications.php">
                         <i class="fas fa-bell"></i>
                         <span>Уведомления</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/games.php">
+                        <i class="fas fa-space-shuttle"></i>
+                        <span>Аркада</span>
                     </a>
                 </li>
                 <li>

@@ -22,7 +22,15 @@ try {
             bio TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
-        
+
+        CREATE TABLE IF NOT EXISTS leaderboard (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            game_type TEXT NOT NULL,
+            score INTEGER NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
         CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -83,6 +91,7 @@ try {
             FOREIGN KEY (user_id) REFERENCES users(id),
             UNIQUE(group_id, user_id)
         );
+        
         CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             sender_id INTEGER NOT NULL,
@@ -93,7 +102,6 @@ try {
             FOREIGN KEY (sender_id) REFERENCES users(id),
             FOREIGN KEY (receiver_id) REFERENCES users(id)
         );
-
         CREATE TABLE IF NOT EXISTS live_streams (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -154,6 +162,42 @@ try {
                 created_at DATETIME NOT NULL,
                 FOREIGN KEY (stream_id) REFERENCES live_streams(id),
                 FOREIGN KEY (user_id) REFERENCES users(id)
+            );
+            CREATE TABLE IF NOT EXISTS game_scores (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                game_id TEXT NOT NULL,
+                score INTEGER NOT NULL,
+                played_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            );
+            
+            CREATE TABLE IF NOT EXISTS user_achievements (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                game_id TEXT NOT NULL,
+                achievement_key TEXT NOT NULL,
+                title TEXT NOT NULL,
+                reward INTEGER NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            );
+            
+            CREATE TABLE IF NOT EXISTS game_currency_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                amount INTEGER NOT NULL,
+                reason TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            );
+            CREATE TABLE IF NOT EXISTS game_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                description TEXT NOT NULL,
+                price INTEGER NOT NULL,
+                icon TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
     ");
 } catch (Exception $e) {
@@ -224,9 +268,26 @@ function initializeDemoData($db) {
             $stmt->execute();
         }
     }
+    // Добавьте этот код в функцию initializeDemoData($db) после создания других таблиц
+    $items = [
+        ['Золотой аватар', 'Эксклюзивная золотая рамка для аватара', 100, 'user-circle'],
+        ['Неоновый никнейм', 'Ваш никнейм будет светиться неоновым светом', 150, 'font'],
+        ['Дополнительные жизни', '+3 жизни в играх', 200, 'heart'],
+        ['Ускорение прогресса', 'Удваивает получаемый опыт на 1 день', 250, 'bolt'],
+        ['Редкий скин', 'Уникальный внешний вид для вашего персонажа', 300, 'palette']
+    ];
+
+    foreach ($items as $item) {
+        $stmt = $db->prepare("INSERT INTO game_items (name, description, price, icon) VALUES (?, ?, ?, ?)");
+        $stmt->bindValue(1, $item[0], SQLITE3_TEXT);
+        $stmt->bindValue(2, $item[1], SQLITE3_TEXT);
+        $stmt->bindValue(3, $item[2], SQLITE3_INTEGER);
+        $stmt->bindValue(4, $item[3], SQLITE3_TEXT);
+        $stmt->execute();
+    }
 }
 
-initializeDemoData($db);
+//initializeDemoData($db);
 
 // Функция для получения текущего пользователя
 function getCurrentUser($db) {
@@ -240,3 +301,4 @@ function getCurrentUser($db) {
     
     return $result->fetchArray(SQLITE3_ASSOC);
 }
+// Проверка и создание тестовых данных (удалите после проверки)
