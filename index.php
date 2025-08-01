@@ -146,7 +146,7 @@ require_once 'includes/header.php';
         <!-- Post Feed -->
         <div class="posts-feed">
             <?php foreach ($posts as $post): ?>
-                <div class="post-card" id="post-<?= $post['id'] ?>">
+                <div class="post-card <?= $post['feeling'] ? ' ' . htmlspecialchars($post['feeling']) : '' ?>" id="post-<?= $post['id'] ?>">
                     <div class="post-header">
                         <a href="/profile.php?id=<?= $post['user_id'] ?>" class="post-author">
                             <img src="assets/images/avatars/<?= htmlspecialchars($post['avatar']) ?>" alt="User" class="author-avatar">
@@ -1033,6 +1033,36 @@ document.addEventListener('DOMContentLoaded', function() {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+/* Добавьте в секцию стилей */
+.post-card {
+    /* Существующие стили */
+    border: 2px solid transparent; /* Добавляем прозрачную границу */
+    transition: border-color 0.3s ease;
+}
+
+.post-card.happy {
+    border-color: #FFD700; /* Желтый для счастья */
+}
+
+.post-card.sad {
+    border-color: #87CEEB; /* Голубой для грусти */
+}
+
+.post-card.angry {
+    border-color: #FF4500; /* Оранжево-красный для злости */
+}
+
+.post-card.loved {
+    border-color: #FF69B4; /* Розовый для влюбленности */
+}
+
+.post-card.tired {
+    border-color: #A9A9A9; /* Серый для усталости */
+}
+
+.post-card.blessed {
+    border-color: #9370DB; /* Фиолетовый для благословения */
 }
 </style>
 <?php require_once 'includes/footer.php'; ?>

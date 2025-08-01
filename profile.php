@@ -1,3 +1,6 @@
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+</head>
 <?php
 require_once 'includes/config.php';
 require_once 'includes/auth.php';
@@ -41,6 +44,24 @@ $friends = getFriends($db, $profile_user['id']);
 $posts = getPostsByUser($db, $profile_user['id']);
 $groups = getGroups($db, $profile_user['id']);
 require_once('includes/header.php');
+?>
+<?php
+// Определяем стиль профиля на основе обложки
+$cover_file = $profile_user['cover'] ?? 'default.jpg';
+$profile_styles = [
+    '1.jpg' => 'default',
+    '2.jpg' => 'got',
+    '3.jpg' => 'khakas',
+    '4.jpg' => 'modern',
+    '5.jpg' => 'cute',
+    '6.jpg' => 'street',
+    '7.jpg' => 'marvel',
+    '8.jpg' => 'cyber',
+    '9.jpg' => 'sport',
+    '10.jpg' => 'nature'
+];
+
+$profile_style = $profile_styles[$cover_file] ?? 'default';
 ?>
 
 <style>
@@ -111,7 +132,18 @@ require_once('includes/header.php');
 .profile-text {
     flex: 1;
 }
+/* В секции стилей */
+.profile-style-got {
+    font-family: 'Times New Roman', serif;
+}
 
+.profile-style-marvel {
+    font-family: 'Bangers', cursive;
+}
+
+.profile-style-cyber {
+    font-family: 'Courier New', monospace;
+}
 .profile-text h1 {
     margin: 0;
     font-size: 28px;
@@ -382,9 +414,1307 @@ require_once('includes/header.php');
         font-size: 0.9em;
     }
 }
+/* Добавьте в секцию стилей */
+/* Стандартный стиль (1.jpg) */
+.profile-style-default {
+    --primary-color: #1877f2;
+    --text-color: #333;
+    --bg-color: #f0f2f5;
+    --card-bg: white;
+    --cover-overlay: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+}
+
+/* Игра Престолов (2.jpg) */
+.profile-style-got {
+    --primary-color: #8b0000;
+    --text-color: #f8f8f8;
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --cover-overlay: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(70,0,0,0.7));
+    font-family: 'Times New Roman', serif;
+}
+
+/* Хакасский стиль (3.jpg) */
+.profile-style-khakas {
+    --primary-color: #4a6b22;
+    --text-color: #2c2c2c;
+    --bg-color: #f5f0e6;
+    --card-bg: #fff9e6;
+    --cover-overlay: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(94,70,44,0.4));
+    font-family: 'Arial', sans-serif;
+}
+
+/* Модный и спокойный (4.jpg) */
+.profile-style-modern {
+    --primary-color: #6a5acd;
+    --text-color: #333;
+    --bg-color: #f8f9fa;
+    --card-bg: white;
+    --cover-overlay: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(106,90,205,0.3));
+    font-family: 'Helvetica Neue', sans-serif;
+}
+
+/* Милый стиль (5.jpg) */
+.profile-style-cute {
+    --primary-color: #ff6b88;
+    --text-color: #555;
+    --bg-color: #fff0f5;
+    --card-bg: #fff9fb;
+    --cover-overlay: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(255,182,193,0.4));
+    font-family: 'Comic Sans MS', cursive;
+}
+
+/* Пацанский стиль (6.jpg) */
+.profile-style-street {
+    --primary-color: #ff4500;
+    --text-color: #333;
+    --bg-color: #f0f0f0;
+    --card-bg: white;
+    --cover-overlay: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
+    font-family: 'Impact', sans-serif;
+}
+
+/* Марвеловский стиль (7.jpg) */
+.profile-style-marvel {
+    --primary-color: #ed1d24;
+    --text-color: #f8f8f8;
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --cover-overlay: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(237,29,36,0.5));
+    font-family: 'Bangers', cursive;
+}
+
+/* Неоновый киберстиль (8.jpg) */
+.profile-style-cyber {
+    --primary-color: #0ff;
+    --text-color: #fff;
+    --bg-color: #0a0a20;
+    --card-bg: #1a1a3a;
+    --cover-overlay: linear-gradient(to bottom, rgba(0,255,255,0.1), rgba(0,255,255,0.3));
+    font-family: 'Courier New', monospace;
+}
+
+/* Спортивный стиль (9.jpg) */
+.profile-style-sport {
+    --primary-color: #ff6600;
+    --text-color: #333;
+    --bg-color: #f5f5f5;
+    --card-bg: white;
+    --cover-overlay: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(255,102,0,0.4));
+    font-family: 'Arial Black', sans-serif;
+}
+
+/* Природный голубой (10.jpg) */
+.profile-style-nature {
+    --primary-color: #4682b4;
+    --text-color: #333;
+    --bg-color: #f0f8ff;
+    --card-bg: white;
+    --cover-overlay: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(70,130,180,0.3));
+    font-family: 'Georgia', serif;
+}
+
+/* Общие стили, которые будут использовать CSS-переменные */
+.profile-container {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.sidebar-card, .profile-header, .profile-tabs, .post {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+.profile-tab.active, .btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.profile-cover {
+    position: relative;
+}
+
+.profile-cover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--cover-overlay);
+}
+<style>
+    /* Базовые стили */
+    :root {
+        --primary-color: #1877f2;
+        --text-color: #333;
+        --bg-color: #f0f2f5;
+        --card-bg: white;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: var(--text-color);
+    }
+    
+    .profile-container {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        gap: 20px;
+        min-height: 100vh;
+    }
+    
+    /* Стили для разных обложек */
+    /* 1. Стандартный стиль */
+    .profile-style-default {
+        --primary-color: #1877f2;
+        --text-color: #333;
+        --bg-color: #f0f2f5;
+        --card-bg: white;
+        background: var(--bg-color);
+    }
+    
+    /* 2. Игра Престолов */
+    .profile-style-got {
+        --primary-color: #8b0000;
+        --text-color: #f8f8f8;
+        --card-bg: rgba(45, 45, 45, 0.8);
+        background: url('/assets/images/backgrounds/got-bg.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Times New Roman', serif;
+    }
+    
+    .profile-style-got .profile-header {
+        border: 2px solid #8b0000;
+        box-shadow: 0 0 15px rgba(139, 0, 0, 0.5);
+    }
+    
+    .profile-style-got .profile-tab.active {
+        background: #8b0000;
+        color: gold;
+        font-weight: bold;
+    }
+    
+    .profile-style-got .btn-primary {
+        background: linear-gradient(to right, #8b0000, #5a0000);
+        border: 1px solid gold;
+        font-family: 'Russo One', sans-serif;
+    }
+    
+    /* 3. Хакасский стиль */
+    .profile-style-khakas {
+        --primary-color: #4a6b22;
+        --text-color: #2c2c2c;
+        --card-bg: rgba(255, 249, 230, 0.9);
+        background: url('/assets/images/backgrounds/khakas-bg.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+    
+    .profile-style-khakas .profile-header {
+        border-radius: 0;
+        border: 3px dashed #4a6b22;
+    }
+    
+    .profile-style-khakas .profile-avatar {
+        border: 3px solid #8a6d3b;
+    }
+    
+    /* 4. Модный и спокойный */
+    .profile-style-modern {
+        --primary-color: #6a5acd;
+        --text-color: #333;
+        --card-bg: rgba(255, 255, 255, 0.95);
+        background: url('/assets/images/backgrounds/modern-bg.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+    
+    .profile-style-modern .profile-header {
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(106, 90, 205, 0.2);
+    }
+    
+    .profile-style-modern .btn {
+        border-radius: 50px;
+    }
+    
+    /* 5. Милый стиль */
+    .profile-style-cute {
+        --primary-color: #ff6b88;
+        --text-color: #555;
+        --card-bg: rgba(255, 249, 251, 0.95);
+        background: url('/assets/images/backgrounds/cute-bg.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Comic Sans MS', cursive;
+    }
+    
+    .profile-style-cute .profile-header {
+        border-radius: 30px 0 30px 0;
+        box-shadow: 0 5px 15px rgba(255, 107, 136, 0.3);
+    }
+    
+    .profile-style-cute .btn {
+        border-radius: 15px;
+    }
+    
+    /* 6. Пацанский стиль */
+    .profile-style-street {
+        --primary-color: #ff4500;
+        --text-color: #333;
+        --card-bg: rgba(255, 255, 255, 0.9);
+        background: url('/assets/images/backgrounds/street-bg.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Impact', sans-serif;
+    }
+    
+    .profile-style-street .profile-header {
+        border: 3px solid #ff4500;
+        box-shadow: 0 0 20px rgba(255, 69, 0, 0.4);
+    }
+    
+    .profile-style-street .btn {
+        transform: skew(-15deg);
+        border: 2px solid black;
+    }
+    
+    /* 7. Марвеловский стиль */
+    .profile-style-marvel {
+        --primary-color: #ed1d24;
+        --text-color: #f8f8f8;
+        --card-bg: rgba(45, 45, 45, 0.9);
+        background: url('/assets/images/backgrounds/marvel-bg.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Bangers', cursive;
+    }
+    
+    .profile-style-marvel .profile-header {
+        border: 3px solid #ed1d24;
+        box-shadow: 0 0 30px rgba(237, 29, 36, 0.6);
+    }
+    
+    .profile-style-marvel .btn {
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    
+    /* 8. Неоновый киберстиль */
+    .profile-style-cyber {
+        --primary-color: #0ff;
+        --text-color: #fff;
+        --card-bg: rgba(26, 26, 58, 0.9);
+        background: url('/assets/images/backgrounds/cyber-bg.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .profile-style-cyber .profile-header {
+        border: 1px solid #0ff;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+    }
+    
+    .profile-style-cyber .btn {
+        background: black;
+        border: 1px solid #0ff;
+        color: #0ff;
+    }
+    
+    /* 9. Спортивный стиль */
+    .profile-style-sport {
+        --primary-color: #ff6600;
+        --text-color: #333;
+        --card-bg: rgba(255, 255, 255, 0.9);
+        background: url('/assets/images/backgrounds/sport-bg.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Arial Black', sans-serif;
+    }
+    
+    .profile-style-sport .profile-header {
+        border-radius: 0;
+        border-top: 5px solid #ff6600;
+    }
+    
+    .profile-style-sport .btn {
+        background: linear-gradient(to right, #ff6600, #ff8c00);
+        color: white;
+        font-weight: bold;
+    }
+    
+    /* 10. Природный голубой */
+    .profile-style-nature {
+        --primary-color: #4682b4;
+        --text-color: #333;
+        --card-bg: rgba(255, 255, 255, 0.9);
+        background: url('/assets/images/backgrounds/nature-bg.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Georgia', serif;
+    }
+    
+    .profile-style-nature .profile-header {
+        border-radius: 0 0 20px 20px;
+        border-top: 5px solid #4682b4;
+    }
+    
+    .profile-style-nature .btn {
+        background: linear-gradient(to right, #4682b4, #5f9ea0);
+        color: white;
+    }
+    
+    /* Общие компоненты */
+    .profile-sidebar {
+        width: 300px;
+        flex-shrink: 0;
+    }
+    
+    .profile-content {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .profile-header {
+        background: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        overflow: hidden;
+        margin-bottom: 20px;
+        height: 400px;
+        position: relative;
+    }
+    
+    .cover-container {
+        position: relative;
+        height: 400px;
+        overflow: hidden;
+    }
+    
+    .profile-cover {
+        width: 100%;
+        height: 55%;
+        object-fit: cover;
+    }
+    
+    .profile-info {
+        display: flex;
+        padding: 20px;
+        position: relative;
+        height: 0px;
+    }
+    
+    .avatar-container {
+        position: relative;
+        margin-top: -75px;
+        margin-right: 20px;
+        z-index: 2;
+    }
+    
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 5px solid white;
+        object-fit: cover;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .profile-text {
+        flex: 1;
+    }
+    
+    .profile-text h1 {
+        margin: 0;
+        font-size: 28px;
+        color: var(--text-color);
+    }
+    
+    .profile-bio {
+        margin: 5px 0;
+        color: var(--text-color);
+    }
+    
+    .profile-stats {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--text-color);
+        font-size: 14px;
+    }
+    
+    .profile-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #e4e6eb;
+        color: #050505;
+    }
+    
+    .btn-secondary:hover {
+        background: #d8dadf;
+    }
+    
+    .btn i {
+        font-size: 0.9em;
+    }
+        /* Базовый сброс стилей */
+        * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* 1. Стандартный стиль - Техно-футуризм */
+    .profile-style-default {
+        --primary: #00f0ff;
+        --secondary: #ff00aa;
+        --bg: #0a0a12;
+        --card: rgba(20, 20, 40, 0.9);
+        --text: #e0e0ff;
+        background: 
+            radial-gradient(circle at 20% 30%, var(--primary), transparent 50%),
+            radial-gradient(circle at 80% 70%, var(--secondary), transparent 50%),
+            var(--bg);
+        font-family: 'Iceberg', cursive;
+    }
+    
+    .profile-style-default .profile-header {
+        background: var(--card);
+        border: 1px solid var(--primary);
+        box-shadow: 0 0 30px var(--primary);
+        clip-path: polygon(0 0, 100% 0, 100% 90%, 80% 100%, 0 100%);
+    }
+    
+    .profile-style-default .profile-avatar {
+        border: 3px solid var(--primary);
+        box-shadow: 0 0 20px var(--primary);
+    }
+    
+    .profile-style-default .btn-primary {
+        background: linear-gradient(45deg, var(--primary), var(--secondary));
+        color: black;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: none;
+    }
+    
+    /* 2. Игра Престолов - Средневековый готический */
+    .profile-style-got {
+        --primary: #8b0000;
+        --secondary: #d4af37;
+        --bg: #121212;
+        --card: rgba(30, 30, 30, 0.9);
+        --text: #f0f0f0;
+        background: 
+            url('/assets/images/backgrounds/got-bg.jpg') center/cover no-repeat,
+            linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+        font-family: 'Russo One', sans-serif;
+    }
+    
+    .profile-style-got .profile-header {
+        background: var(--card);
+        border-left: 10px solid var(--primary);
+        border-right: 10px solid var(--primary);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-style-got .profile-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+    }
+    
+    .profile-style-got .profile-avatar {
+        border: 3px double var(--secondary);
+        filter: sepia(0.3);
+    }
+    
+    /* 3. Хакасский стиль - Этнический шаманизм */
+    .profile-style-khakas {
+        --primary: #4a6b22;
+        --secondary: #8a6d3b;
+        --bg: #f5f0e6;
+        --card: rgba(255, 252, 240, 0.95);
+        --text: #3a3a3a;
+        background: 
+            url('/assets/images/backgrounds/khakas-pattern.png'),
+            var(--bg);
+        font-family: 'Marck Script', cursive;
+    }
+    
+    .profile-style-khakas .profile-header {
+        background: var(--card);
+        border: 3px dashed var(--primary);
+        border-radius: 0 0 30px 30px;
+        background-image: url('/assets/images/backgrounds/khakas-border.png');
+        background-repeat: repeat-x;
+        background-position: bottom;
+    }
+    
+    .profile-style-khakas .profile-avatar {
+        border: 3px solid var(--secondary);
+        box-shadow: 5px 5px 0 var(--primary);
+    }
+    
+    /* 4. Модный и спокойный - Неоморфизм */
+    .profile-style-modern {
+        --primary: #6a5acd;
+        --secondary: #9370db;
+        --bg: #f0f0f5;
+        --card: rgba(255, 255, 255, 0.7);
+        --text: #333;
+        background: var(--bg);
+        font-family: 'Segoe UI', sans-serif;
+    }
+    
+    .profile-style-modern .profile-header {
+        background: var(--card);
+        border-radius: 25px;
+        box-shadow: 
+            8px 8px 15px rgba(0, 0, 0, 0.1),
+            -8px -8px 15px rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+    }
+    
+    .profile-style-modern .profile-avatar {
+        box-shadow: 
+            5px 5px 10px rgba(0, 0, 0, 0.1),
+            -5px -5px 10px rgba(255, 255, 255, 0.8);
+    }
+    
+    /* 5. Милый стиль - Каваий */
+    .profile-style-cute {
+        --primary: #ff6b88;
+        --secondary: #ffb6c1;
+        --bg: #fff0f5;
+        --card: rgba(255, 255, 255, 0.9);
+        --text: #555;
+        background: 
+            url('/assets/images/backgrounds/cute-pattern.png'),
+            var(--bg);
+        font-family: 'Pacifico', cursive;
+    }
+    
+    .profile-style-cute .profile-header {
+        background: var(--card);
+        border-radius: 50px 0 50px 0;
+        border: 3px dotted var(--primary);
+        box-shadow: 0 10px 20px rgba(255, 107, 136, 0.2);
+    }
+    
+    .profile-style-cute .profile-avatar {
+        border: 3px solid var(--secondary);
+        shape-outside: circle(50%);
+    }
+    
+    /* 6. Пацанский стиль - Уличный граффити */
+    .profile-style-street {
+        --primary: #ff4500;
+        --secondary: #000;
+        --bg: #e0e0e0;
+        --card: rgba(255, 255, 255, 0.9);
+        --text: #333;
+        background: 
+            url('/assets/images/backgrounds/street-graffiti.png'),
+            var(--bg);
+        font-family: 'Rubik Mono One', sans-serif;
+    }
+    
+    .profile-style-street .profile-header {
+        background: var(--card);
+        border: 5px solid var(--secondary);
+        transform: rotate(-1deg);
+        box-shadow: 10px 10px 0 var(--primary);
+    }
+    
+    .profile-style-street .profile-avatar {
+        border: 3px solid var(--primary);
+        filter: contrast(1.2);
+    }
+    
+    /* 7. Марвеловский стиль - Комиксы */
+    .profile-style-marvel {
+        --primary: #ed1d24;
+        --secondary: #f78f1e;
+        --bg: #121212;
+        --card: rgba(30, 30, 30, 0.9);
+        --text: #fff;
+        background: 
+            url('/assets/images/backgrounds/marvel-comic.png'),
+            var(--bg);
+        font-family: 'Bangers', cursive;
+    }
+    
+    .profile-style-marvel .profile-header {
+        background: var(--card);
+        border: 5px solid var(--primary);
+        box-shadow: 0 0 0 5px var(--secondary);
+        clip-path: polygon(0 0, 100% 0, 100% 80%, 90% 100%, 0 100%);
+    }
+    
+    .profile-style-marvel .profile-avatar {
+        border: 3px solid var(--secondary);
+        box-shadow: 5px 5px 0 var(--primary);
+    }
+    
+    /* 8. Неоновый киберстиль - Киберпанк */
+    .profile-style-cyber {
+        --primary: #0ff;
+        --secondary: #f0f;
+        --bg: #0a0a20;
+        --card: rgba(20, 20, 50, 0.9);
+        --text: #fff;
+        background: 
+            linear-gradient(45deg, 
+                rgba(0, 255, 255, 0.1) 0%, 
+                rgba(255, 0, 255, 0.1) 100%),
+            url('/assets/images/backgrounds/cyber-grid.png'),
+            var(--bg);
+        font-family: 'Press Start 2P', cursive;
+    }
+    
+    .profile-style-cyber .profile-header {
+        background: var(--card);
+        border: 1px solid var(--primary);
+        box-shadow: 
+            0 0 10px var(--primary),
+            0 0 20px var(--secondary);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-style-cyber .profile-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            linear-gradient(45deg, 
+                transparent 48%, 
+                var(--primary) 49%, 
+                var(--secondary) 51%, 
+                transparent 52%);
+        background-size: 10px 10px;
+        opacity: 0.1;
+        pointer-events: none;
+    }
+    
+    /* 9. Спортивный стиль - Экстрим */
+    .profile-style-sport {
+        --primary: #ff6600;
+        --secondary: #0066ff;
+        --bg: #f5f5f5;
+        --card: rgba(255, 255, 255, 0.9);
+        --text: #333;
+        background: 
+            url('/assets/images/backgrounds/sport-lines.png'),
+            var(--bg);
+        font-family: 'Arial Black', sans-serif;
+    }
+    
+    .profile-style-sport .profile-header {
+        background: var(--card);
+        border-top: 10px solid var(--primary);
+        border-bottom: 10px solid var(--secondary);
+        position: relative;
+    }
+    
+    .profile-style-sport .profile-header::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        transform: translateY(-50%);
+    }
+    
+    /* 10. Природный голубой - Акварель */
+    .profile-style-nature {
+        --primary: #4682b4;
+        --secondary: #5f9ea0;
+        --bg: #f0f8ff;
+        --card: rgba(255, 255, 255, 0.95);
+        --text: #333;
+        background: 
+            url('/assets/images/backgrounds/nature-watercolor.jpg') center/cover no-repeat,
+            var(--bg);
+        font-family: 'Georgia', serif;
+    }
+    
+    .profile-style-nature .profile-header {
+        background: var(--card);
+        border-radius: 0 0 30px 30px;
+        box-shadow: 0 10px 20px rgba(70, 130, 180, 0.2);
+        background-image: url('/assets/images/backgrounds/nature-border.png');
+        background-repeat: repeat-x;
+        background-position: bottom;
+    }
+    
+    .profile-style-nature .profile-avatar {
+        border: 3px solid var(--primary);
+        filter: drop-shadow(5px 5px 5px rgba(70, 130, 180, 0.3));
+    }
+    
+    /* Общие компоненты (адаптированные под все стили) */
+    .profile-container {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        gap: 20px;
+        min-height: 100vh;
+        color: var(--text);
+    }
+    
+    .profile-sidebar {
+        width: 300px;
+        flex-shrink: 0;
+    }
+    
+    .profile-content {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .profile-header {
+        height: 400px;
+        margin-bottom: 20px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .cover-container {
+        position: relative;
+        height: 400px;
+        overflow: hidden;
+    }
+    
+    .profile-cover {
+        width: 100%;
+        height: 55%;
+        object-fit: cover;
+    }
+    
+    .profile-info {
+        display: flex;
+        padding: 20px;
+        position: relative;
+        height: 0px;
+    }
+    
+    .avatar-container {
+        position: relative;
+        margin-top: -75px;
+        margin-right: 20px;
+        z-index: 2;
+    }
+    
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        transition: all 0.3s ease;
+    }
+    
+    .profile-text h1 {
+        margin: 0;
+        font-size: 28px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        color: black;
+    }
+    
+    .profile-bio {
+        margin: 5px 0;
+        color: gray;
+    }
+    
+    .profile-stats {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+        color: grey;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+    }
+    
+    .profile-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+        color: black;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 10px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        border: none;
+        color: black;
+        cursor: pointer;
+    }
+    
+    .btn-primary {
+        background: var(--primary);
+        color: black;
+    }
+    
+    .btn-secondary {
+        background: rgba(0, 0, 0, 0.2);
+        color: black;
+        backdrop-filter: blur(5px);
+    }
+    
+    .btn i {
+        font-size: 0.9em;
+    }
+    
+    /* Анимации и эффекты */
+    .profile-avatar:hover {
+        transform: scale(1.05);
+        filter: brightness(1.1);
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        color: black;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .profile-container {
+            flex-direction: column;
+        }
+        
+        .profile-sidebar {
+            width: 100%;
+        }
+        
+        .profile-header {
+            height: auto;
+        }
+        
+        .profile-info {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .avatar-container {
+            margin: -75px auto 15px;
+        }
+    }    /* Базовые стили и сброс */
+    :root {
+        --mobile-breakpoint: 768px;
+        --small-mobile-breakpoint: 480px;
+    }
+    
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    body {
+        font-family: 'Montserrat', sans-serif;
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+    
+    /* Общие адаптивные компоненты */
+    .profile-container {
+        display: flex;
+        flex-direction: column;
+        max-width: 100%;
+        min-height: 100vh;
+        padding: 0;
+        position: relative;
+    }
+    
+    .profile-sidebar, .profile-content {
+        width: 100%;
+        padding: 15px;
+    }
+    
+    .profile-header {
+        height: auto;
+        min-height: 300px;
+        margin-bottom: 0;
+        border-radius: 0 !important;
+    }
+    
+    .cover-container {
+        height: 400px;
+    }
+    
+    .profile-info {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+        height: 200px;
+        margin-top: 0px;
+    }
+    
+    .avatar-container {
+        margin: -60px auto 15px;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 70px;
+    }
+    
+    .profile-text h1 {
+        font-size: 24px;
+    }
+    
+    .profile-actions {
+        justify-content: center;
+        margin-bottom: 70px;
+    }
+    .profile-stats{
+        margin-bottom: 70px;
+    }
+    
+    .btn {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+    .profile-cover{
+        height: 400px;
+    }
+    /* Медиа-запросы для планшетов */
+    @media (min-width: 768px) {
+        .profile-container {
+            flex-direction: row;
+            padding: 20px;
+        }
+        
+        .profile-sidebar {
+            width: 300px;
+            padding-right: 0;
+        }
+        
+        .profile-content {
+            flex: 1;
+            padding-left: 20px;
+        }
+        
+        .profile-header {
+            border-radius: 10px !important;
+            margin-bottom: 20px;
+            height: 350px;
+        }
+        
+        .cover-container {
+            height: 200px;
+        }
+        
+        .profile-info {
+            flex-direction: row;
+            text-align: left;
+            padding: 20px;
+        }
+        
+        .avatar-container {
+            margin: -75px 20px 0 0;
+        }
+        
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+        }
+    }
+    
+    /* Медиа-запросы для десктопов */
+    @media (min-width: 1024px) {
+        .cover-container {
+            height: 250px;
+        }
+        
+        .profile-header {
+            height: 400px;
+        }
+    }
+    
+    /* Стили для очень маленьких экранов */
+    @media (max-width: 480px) {
+        .profile-text h1 {
+            font-size: 20px;
+        }
+        
+        .profile-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .btn {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .profile-cover{
+            margin-bottom: 100px;
+        }
+        .cover-container {
+            height: 200px;
+            margin-bottom: 100px;
+        }
+        .profile-info{
+            margin-bottom: 300px;
+            margin-top: -100px;
+        }
+    }
+    
+    /* 1. Техно-футуризм - адаптивные модификации */
+    .profile-style-default {
+        --primary: #00f0ff;
+        --secondary: #ff00aa;
+        --bg: #0a0a12;
+        --card: rgba(20, 20, 40, 0.95);
+        --text: #e0e0ff;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-style-default .profile-header {
+            clip-path: none;
+            border: none;
+            box-shadow: 0 0 15px var(--primary);
+        }
+    }
+    
+    /* 2. Игра Престолов - адаптивные модификации */
+    .profile-style-got {
+        --primary: #8b0000;
+        --secondary: #d4af37;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-style-got .profile-header {
+            border-left: none;
+            border-right: none;
+        }
+        
+        .profile-style-got .profile-header::before {
+            height: 3px;
+        }
+    }
+    
+    /* 3. Хакасский стиль - адаптивные модификации */
+    .profile-style-khakas {
+        --primary: #4a6b22;
+        --secondary: #8a6d3b;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-style-khakas .profile-header {
+            border: none;
+            border-bottom: 3px dashed var(--primary);
+            background-image: none;
+        }
+    }
+    
+    /* 4. Неоморфизм - адаптивные модификации */
+    .profile-style-modern {
+        --primary: #6a5acd;
+        --secondary: #9370db;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-style-modern .profile-header {
+            box-shadow: none;
+            backdrop-filter: none;
+        }
+    }
+    
+    /* 5. Каваий стиль - адаптивные модификации */
+    .profile-style-cute {
+        --primary: #ff6b88;
+        --secondary: #ffb6c1;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-style-cute .profile-header {
+            border-radius: 0 !important;
+            border: none;
+            border-bottom: 3px dotted var(--primary);
+        }
+    }
+    
+    /* 6. Граффити стиль - адаптивные модификации */
+    .profile-style-street {
+        --primary: #ff4500;
+        --secondary: #000;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-style-street .profile-header {
+            transform: none;
+            box-shadow: none;
+            border: none;
+            border-bottom: 5px solid var(--secondary);
+        }
+        
+        .profile-style-street .btn {
+            transform: none;
+        }
+    }
+    
+    /* 7. Комиксы - адаптивные модификации */
+    .profile-style-marvel {
+        --primary: #ed1d24;
+        --secondary: #f78f1e;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-style-marvel .profile-header {
+            clip-path: none;
+            border: none;
+            border-bottom: 5px solid var(--primary);
+        }
+    }
+    
+    /* 8. Киберпанк - адаптивные модификации */
+    .profile-style-cyber {
+        --primary: #0ff;
+        --secondary: #f0f;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-style-cyber .profile-header::after {
+            background-size: 5px 5px;
+        }
+    }
+    
+    /* 9. Спорт - адаптивные модификации */
+    .profile-style-sport {
+        --primary: #ff6600;
+        --secondary: #0066ff;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-style-sport .profile-header {
+            border-top: 5px solid var(--primary);
+            border-bottom: 5px solid var(--secondary);
+        }
+    }
+    
+    /* 10. Акварель - адаптивные модификации */
+    .profile-style-nature {
+        --primary: #4682b4;
+        --secondary: #5f9ea0;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-style-nature .profile-header {
+            background-image: none;
+        }
+    }
+    
+    /* Адаптивные вкладки */
+    .profile-tabs {
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    
+    .profile-tabs::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .profile-tab {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+    
+    /* Адаптивные карточки друзей и групп */
+    .friends-grid, .groups-list {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 8px;
+    }
+    
+    @media (min-width: 480px) {
+        .friends-grid, .groups-list {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+    }
+    
+    /* Оптимизация фонов для мобильных устройств */
+    @media (max-width: 768px) {
+        .profile-style-got,
+        .profile-style-marvel,
+        .profile-style-cyber {
+            background-attachment: scroll;
+        }
+    }
+    
+    /* Оптимизация анимаций для устройств с prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+    </style>
 </style>
 
-<div class="profile-container">
+<div class="profile-container profile-style-<?= $profile_style ?>">
     <!-- Левая колонка (информация) -->
     <div class="profile-sidebar">
         <div class="sidebar-card">
@@ -462,9 +1792,7 @@ require_once('includes/header.php');
                          alt="Аватар"
                          onerror="this.src='/assets/images/avatars/default.png'">
                     <?php if ($is_own_profile): ?>
-                    <button class="edit-avatar-btn">
-                        <i class="fas fa-camera"></i>
-                    </button>
+
                     <?php endif; ?>
                 </div>
                 <div class="profile-text">
@@ -474,7 +1802,7 @@ require_once('includes/header.php');
                     <div class="profile-stats">
                         <div class="stat-item">
                             <i class="fas fa-users"></i>
-                            <span><?= count($friends) ?> друзей</span>
+                            <span color="grey"><?= count($friends) ?> друзей</span>
                         </div>
                         <div class="stat-item">
                             <i class="fas fa-newspaper"></i>
@@ -742,6 +2070,7 @@ require_once('includes/header.php');
         </div>
     </div>
 </div>
+
 
 <script>
 // Переключение вкладок

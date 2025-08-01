@@ -32,17 +32,15 @@ include 'includes/header.php';
         </div>
     </div>
     
-    <div class="instructions">
-        <h3><i class="fas fa-info-circle"></i> Управление:</h3>
-        <div class="controls-visual">
-            <div class="control-keys">
-                <div class="key" id="key-left"><i class="fas fa-arrow-left"></i></div>
-                <div class="key" id="key-up"><i class="fas fa-arrow-up"></i></div>
-                <div class="key" id="key-right"><i class="fas fa-arrow-right"></i></div>
-            </div>
-            <div class="shoot-key">
-                <div class="key-wide" id="key-space">ПРОБЕЛ</div>
-            </div>
+    <!-- Мобильное управление -->
+    <div class="mobile-controls">
+        <div class="control-row">
+            <button class="control-btn left" id="mobile-left"><i class="fas fa-arrow-left"></i></button>
+            <button class="control-btn up" id="mobile-up"><i class="fas fa-arrow-up"></i></button>
+            <button class="control-btn right" id="mobile-right"><i class="fas fa-arrow-right"></i></button>
+        </div>
+        <div class="control-row">
+            <button class="control-btn shoot" id="mobile-shoot"><i class="fas fa-bullseye"></i> Стрелять</button>
         </div>
     </div>
 </div>
@@ -91,6 +89,13 @@ const gameOverlay = document.getElementById('game-overlay');
 const resultTitle = document.getElementById('result-title');
 const resultText = document.getElementById('result-text');
 const playAgainBtn = document.getElementById('play-again-btn');
+
+// Кнопки мобильного управления
+const mobileUp = document.getElementById('mobile-up');
+const mobileDown = document.getElementById('mobile-down');
+const mobileLeft = document.getElementById('mobile-left');
+const mobileRight = document.getElementById('mobile-right');
+const mobileShoot = document.getElementById('mobile-shoot');
 
 // Инициализация игры
 function initGame() {
@@ -150,21 +155,21 @@ function update(timestamp) {
     timeElement.textContent = gameState.gameTime;
     
     // Движение игрока
-    if (gameState.keys.ArrowLeft && gameState.player.x > 0) {
+    if ((gameState.keys.ArrowLeft || gameState.keys.mobileLeft) && gameState.player.x > 0) {
         gameState.player.x -= config.playerSpeed;
     }
-    if (gameState.keys.ArrowRight && gameState.player.x < canvas.width - config.playerSize) {
+    if ((gameState.keys.ArrowRight || gameState.keys.mobileRight) && gameState.player.x < canvas.width - config.playerSize) {
         gameState.player.x += config.playerSpeed;
     }
-    if (gameState.keys.ArrowUp && gameState.player.y > 0) {
+    if ((gameState.keys.ArrowUp || gameState.keys.mobileUp) && gameState.player.y > 0) {
         gameState.player.y -= config.playerSpeed;
     }
-    if (gameState.keys.ArrowDown && gameState.player.y < canvas.height - config.playerSize) {
+    if ((gameState.keys.ArrowDown || gameState.keys.mobileDown) && gameState.player.y < canvas.height - config.playerSize) {
         gameState.player.y += config.playerSpeed;
     }
     
     // Стрельба
-    if (gameState.keys[' '] && timestamp - (gameState.lastShot || 0) > 300) {
+    if ((gameState.keys[' '] || gameState.keys.mobileShoot) && timestamp - (gameState.lastShot || 0) > 300) {
         shoot();
         gameState.lastShot = timestamp;
     }
@@ -313,7 +318,7 @@ function endGame() {
     <?php endif; ?>
 }
 
-// Обработчики событий
+// Обработчики событий клавиатуры
 document.addEventListener('keydown', (e) => {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
         gameState.keys[e.key] = true;
@@ -339,6 +344,104 @@ document.addEventListener('keyup', (e) => {
     }
 });
 
+// Обработчики мобильного управления
+mobileLeft.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileLeft = true;
+    mobileLeft.classList.add('active');
+});
+
+mobileLeft.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileLeft = false;
+    mobileLeft.classList.remove('active');
+});
+
+mobileRight.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileRight = true;
+    mobileRight.classList.add('active');
+});
+
+mobileRight.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileRight = false;
+    mobileRight.classList.remove('active');
+});
+
+mobileUp.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileUp = true;
+    mobileUp.classList.add('active');
+});
+
+mobileUp.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileUp = false;
+    mobileUp.classList.remove('active');
+});
+
+mobileShoot.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileShoot = true;
+    mobileShoot.classList.add('active');
+});
+
+mobileShoot.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileShoot = false;
+    mobileShoot.classList.remove('active');
+});
+
+// Обработчики для мыши (на случай, если пользователь на ПК захочет использовать кнопки)
+mobileLeft.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileLeft = true;
+    mobileLeft.classList.add('active');
+});
+
+mobileLeft.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileLeft = false;
+    mobileLeft.classList.remove('active');
+});
+
+mobileRight.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileRight = true;
+    mobileRight.classList.add('active');
+});
+
+mobileRight.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileRight = false;
+    mobileRight.classList.remove('active');
+});
+
+mobileUp.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileUp = true;
+    mobileUp.classList.add('active');
+});
+
+mobileUp.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileUp = false;
+    mobileUp.classList.remove('active');
+});
+
+mobileShoot.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileShoot = true;
+    mobileShoot.classList.add('active');
+});
+
+mobileShoot.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    gameState.keys.mobileShoot = false;
+    mobileShoot.classList.remove('active');
+});
+
 pauseBtn.addEventListener('click', () => {
     if (!gameState.isRunning) return;
     
@@ -358,7 +461,6 @@ initGame();
 </script>
 
 <style>
-/* Стили остаются без изменений, как в предыдущем примере */
 .space-game-container {
     max-width: 800px;
     margin: 20px auto;
@@ -488,65 +590,49 @@ initGame();
     box-shadow: 0 4px 15px rgba(0, 200, 83, 0.4);
 }
 
-.instructions {
+/* Мобильное управление */
+.mobile-controls {
+    display: none; /* По умолчанию скрыто для десктопов */
     margin-top: 20px;
-    padding: 20px;
+    padding: 15px;
     background: rgba(0, 20, 40, 0.7);
     border-radius: 8px;
     border: 1px solid #1a3a5a;
 }
 
-.instructions h3 {
-    margin-top: 0;
-    color: #4fc3f7;
+.control-row {
     display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.controls-visual {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 20px 0;
-}
-
-.control-keys {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    justify-content: center;
+    gap: 15px;
     margin-bottom: 15px;
 }
 
-.key {
-    width: 60px;
-    height: 60px;
+.control-btn {
+    width: 70px;
+    height: 70px;
     background: linear-gradient(145deg, #1a3a5a, #0d2b45);
-    border-radius: 10px;
+    border: none;
+    border-radius: 50%;
+    color: #4fc3f7;
+    font-size: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    color: #4fc3f7;
+    cursor: pointer;
     box-shadow: 0 3px 6px rgba(0,0,0,0.3);
     transition: all 0.1s;
+    user-select: none;
 }
 
-.key-wide {
+.control-btn.shoot {
     width: 180px;
-    height: 50px;
-    background: linear-gradient(145deg, #1a3a5a, #0d2b45);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    color: #4fc3f7;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-    text-transform: uppercase;
+    height: 60px;
+    border-radius: 30px;
+    font-size: 18px;
+    gap: 8px;
 }
 
-.key.active {
+.control-btn.active {
     background: linear-gradient(145deg, #2a4a6a, #1d3b55);
     transform: scale(0.95);
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
@@ -569,15 +655,21 @@ initGame();
         height: auto;
     }
     
-    .key {
-        width: 50px;
-        height: 50px;
+    .mobile-controls {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .control-btn {
+        width: 60px;
+        height: 60px;
         font-size: 20px;
     }
     
-    .key-wide {
-        width: 150px;
-        height: 45px;
+    .control-btn.shoot {
+        width: 160px;
+        height: 50px;
+        font-size: 16px;
     }
 }
 </style>

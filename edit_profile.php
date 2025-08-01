@@ -2,7 +2,7 @@
 require_once 'includes/config.php';
 require_once 'includes/auth.php';
 require_once 'includes/functions.php';
-
+$names = ['Дефолтное', 'Зима близко', 'Hello World.', 'Гламурно на стиле', 'Устал', 'АУЕ', 'Marvel', 'Киберпанк', 'Спорт это жизнь', 'Спокойствие'];
 $user = getCurrentUser($db);
 if (!$user) {
     header('Location: /login.php');
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Обработка аватарки
         $avatar = $user['avatar'];
         if (!empty($_FILES['avatar']['name'])) {
-            $upload_dir = realpath('/assets/images/avatars/') . '/';
+            $upload_dir = realpath(__DIR__ . '/../assets/images/avatars/') . '/';
             
             // Создаем папку, если её нет
             if (!file_exists($upload_dir)) {
@@ -113,12 +113,13 @@ require_once 'includes/header.php';
             </div>
             
             <div class="form-group">
-                <label>Обложка профиля</label>
+                <label>Оформление профиля</label>
                 <div class="cover-selector">
                     <?php for ($i = 1; $i <= 10; $i++): ?>
                         <label class="cover-option">
                             <input type="radio" name="cover" value="<?= $i ?>.jpg" <?= ($user['cover'] ?? '1.jpg') == "$i.jpg" ? 'checked' : '' ?>>
                             <img src="/assets/images/covers/<?= $i ?>.jpg" alt="Cover <?= $i ?>">
+                            <p><?= $names[$i - 1]?></p>
                         </label>
                     <?php endfor; ?>
                 </div>

@@ -32,35 +32,29 @@ include 'includes/header.php';
         </div>
     </div>
     
-    <div class="instructions">
-        <h3><i class="fas fa-info-circle"></i> Управление:</h3>
-        <div class="keys">
-            <div class="key-row">
-                <div class="key-placeholder"></div>
-                <div class="key" id="key-up">↑</div>
-                <div class="key-placeholder"></div>
-            </div>
-            <div class="key-row">
-                <div class="key" id="key-left">←</div>
-                <div class="key" id="key-down">↓</div>
-                <div class="key" id="key-right">→</div>
-            </div>
+    <div class="mobile-controls">
+        <div class="control-row">
+            <button class="control-btn up" id="mobile-up"><i class="fas fa-arrow-up"></i></button>
         </div>
-        <p>Используйте стрелки для управления змейкой</p>
+        <div class="control-row">
+            <button class="control-btn left" id="mobile-left"><i class="fas fa-arrow-left"></i></button>
+            <button class="control-btn down" id="mobile-down"><i class="fas fa-arrow-down"></i></button>
+            <button class="control-btn right" id="mobile-right"><i class="fas fa-arrow-right"></i></button>
+        </div>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Конфигурация игры (изменены параметры скорости)
+    // Конфигурация игры
     const config = {
         canvasWidth: 600,
         canvasHeight: 400,
         gridSize: 20,
-        initialSpeed: 800,  // Увеличено с 500 до 800 (медленнее)
-        minSpeed: 400,      // Увеличено с 250 до 400 (минимальная скорость)
-        speedStep: 2,       // Уменьшено с 3 до 2 (менее резкое ускорение)
-        speedChange: 0.985  // Изменено с 0.97 до 0.985 (более плавное ускорение)
+        initialSpeed: 800,
+        minSpeed: 400,
+        speedStep: 2,
+        speedChange: 0.985
     };
     
     // Элементы DOM
@@ -75,6 +69,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultTitle = document.getElementById('result-title');
     const resultText = document.getElementById('result-text');
     const playAgainBtn = document.getElementById('play-again-btn');
+    
+    // Кнопки мобильного управления
+    const mobileUp = document.getElementById('mobile-up');
+    const mobileDown = document.getElementById('mobile-down');
+    const mobileLeft = document.getElementById('mobile-left');
+    const mobileRight = document.getElementById('mobile-right');
     
     // Состояние игры
     let snake = [];
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 config.minSpeed,
                 currentSpeed * config.speedChange - config.speedStep
             );
-            speedLevel = (config.initialSpeed - currentSpeed) / 80 + 1; // Изменен делитель с 50 на 80 для более плавного отображения скорости
+            speedLevel = (config.initialSpeed - currentSpeed) / 80 + 1;
             createFood();
             updateUI();
         } else {
@@ -405,6 +405,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Обработка нажатий мобильных кнопок
+    mobileUp.addEventListener('click', function() {
+        if (!gameActive || gamePaused) return;
+        if (direction !== 'down') nextDirection = 'up';
+        highlightButton(mobileUp);
+    });
+    
+    mobileDown.addEventListener('click', function() {
+        if (!gameActive || gamePaused) return;
+        if (direction !== 'up') nextDirection = 'down';
+        highlightButton(mobileDown);
+    });
+    
+    mobileLeft.addEventListener('click', function() {
+        if (!gameActive || gamePaused) return;
+        if (direction !== 'right') nextDirection = 'left';
+        highlightButton(mobileLeft);
+    });
+    
+    mobileRight.addEventListener('click', function() {
+        if (!gameActive || gamePaused) return;
+        if (direction !== 'left') nextDirection = 'right';
+        highlightButton(mobileRight);
+    });
+    
+    // Подсветка кнопки при нажатии
+    function highlightButton(button) {
+        button.classList.add('active');
+        setTimeout(() => {
+            button.classList.remove('active');
+        }, 200);
+    }
+    
     // Кнопка паузы
     pauseBtn.addEventListener('click', function() {
         if (!gameActive) return;
@@ -429,26 +462,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Кнопка "Играть снова"
     playAgainBtn.addEventListener('click', initGame);
-    
-    // Подсветка кнопок управления при нажатии клавиш
-    const keyElements = {
-        'ArrowUp': document.getElementById('key-up'),
-        'ArrowDown': document.getElementById('key-down'),
-        'ArrowLeft': document.getElementById('key-left'),
-        'ArrowRight': document.getElementById('key-right')
-    };
-    
-    document.addEventListener('keydown', function(e) {
-        if (keyElements[e.key]) {
-            keyElements[e.key].classList.add('active');
-        }
-    });
-    
-    document.addEventListener('keyup', function(e) {
-        if (keyElements[e.key]) {
-            keyElements[e.key].classList.remove('active');
-        }
-    });
     
     // Начало игры
     initGame();
@@ -583,56 +596,48 @@ document.addEventListener('DOMContentLoaded', function() {
     background: #27ae60;
 }
 
-.instructions {
+/* Мобильное управление */
+.mobile-controls {
+    display: none; /* По умолчанию скрыто для десктопов */
     margin-top: 20px;
-    padding: 15px;
+    padding: 10px;
     background: rgba(26, 32, 44, 0.7);
     border-radius: 8px;
     border: 1px solid #4e4e6d;
 }
 
-.instructions h3 {
-    margin-top: 0;
-    color: #f1c40f;
-}
-
-.keys {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 15px 0;
-}
-
-.key-row {
+.control-row {
     display: flex;
     justify-content: center;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
-.key {
-    width: 50px;
-    height: 50px;
+.control-btn {
+    width: 60px;
+    height: 60px;
     background: #34495e;
-    border-radius: 5px;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    margin: 0 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    margin: 0 5px;
+    cursor: pointer;
     transition: all 0.2s;
 }
 
-.key.active {
+.control-btn.active {
     background: #3498db;
     transform: scale(0.95);
 }
 
-.key-placeholder {
-    width: 50px;
-    height: 50px;
-    margin: 0 5px;
+.control-btn.up {
+    margin-bottom: 10px;
 }
 
+/* Адаптивность */
 @media (max-width: 768px) {
     .game-info {
         flex-direction: column;
@@ -647,6 +652,10 @@ document.addEventListener('DOMContentLoaded', function() {
     #game-canvas {
         width: 100%;
         height: auto;
+    }
+    
+    .mobile-controls {
+        display: block; /* Показываем на мобильных устройствах */
     }
 }
 </style>
