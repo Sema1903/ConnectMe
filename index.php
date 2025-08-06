@@ -216,10 +216,11 @@ require_once 'includes/header.php';
                     <!-- Комментарии -->
                     <div class="comments-section" id="comments-<?= $post['id'] ?>" style="display: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
                         <?php if ($user): ?>
-                            <div class="add-comment" style="display: flex; margin-bottom: 15px;">
-                                <img src="assets/images/avatars/<?= $user['avatar'] ?>" alt="User" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;">
-                                <form class="comment-form" data-post-id="<?= $post['id'] ?>" style="flex-grow: 1;">
-                                    <input type="text" name="comment" placeholder="Написать комментарий..." style="width: 100%; padding: 8px 12px; border-radius: 20px; border: 1px solid #ddd; outline: none;">
+                            <div class="add-comment">
+                                <img src="assets/images/avatars/<?= $user['avatar'] ?>" class="comment-author-avatar">
+                                <form class="comment-form" data-post-id="<?= $post['id'] ?>">
+                                    <input type="text" name="comment" placeholder="Написать комментарий..." required>
+                                    <button type="submit" style="display:none"></button>
                                 </form>
                             </div>
                         <?php endif; ?>

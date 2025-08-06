@@ -47,7 +47,7 @@ require_once('includes/header.php');
 ?>
 <?php
 // Определяем стиль профиля на основе обложки
-$cover_file = $profile_user['cover'] ?? 'default.jpg';
+/*$cover_file = $profile_user['cover'] ?? 'default.jpg';
 $profile_styles = [
     '1.jpg' => 'default',
     '2.jpg' => 'got',
@@ -61,7 +61,69 @@ $profile_styles = [
     '10.jpg' => 'nature'
 ];
 
-$profile_style = $profile_styles[$cover_file] ?? 'default';
+$profile_style = $profile_styles[$cover_file] ?? 'default';*/
+
+
+
+
+$active_cover = $profile_user['cover'] ?? '1.jpg';
+$active_styles = [
+    'bronze.jpg' => 'bronze',
+    'silver.jpg' => 'silver',
+    'gold.jpg' => 'gold',
+    'vip.jpg' => 'vip',
+    // остальные стандартные обложки
+    '1.jpg' => 'default',
+    '2.jpg' => 'got',
+    '3.jpg' => 'khakas',
+    '4.jpg' => 'modern',
+    '5.jpg' => 'cute',
+    '6.jpg' => 'street',
+    '7.jpg' => 'marvel',
+    '8.jpg' => 'cyber',
+    '9.jpg' => 'sport',
+    '10.jpg' => 'nature'
+];
+
+$profile_style = $active_styles[$active_cover] ?? 'default';
+
+if ($profile_user) {
+    $active_item = $db->querySingle("
+        SELECT gi.type 
+        FROM user_items ui
+        JOIN game_items gi ON ui.item_id = gi.id
+        WHERE ui.user_id = {$profile_user['id']} AND ui.is_active = 1 
+        AND gi.type IN ('3rd lavel', '2nd lavel', '1st lavel', 'premium')
+    ", true);
+    if ($active_item) {
+        switch ($active_item['type']) {
+            case '3rd lavel': 
+                $active_style = 'bronze';
+                $active_cover = 'bronze.jpg';
+                break;
+            case '2nd lavel': 
+                $active_style = 'silver';
+                $active_cover = 'silver.jpg';
+                break;
+            case '1st lavel': 
+                $active_style = 'gold';
+                $active_cover = 'gold.jpg';
+                break;
+            case 'premium': 
+                $active_style = 'vip';
+                $active_cover = 'vip.jpg';
+                break;
+        }
+        $profile_style = $active_style;
+        $profile_user['cover'] = $active_cover;
+        // Если у пользователя нет обложки или она не соответствует стилю
+        /*if (!$profile_user['cover'] || !in_array($profile_user['cover'], ['bronze.jpg', 'silver.jpg', 'gold.jpg', 'vip.jpg'])) {
+            $profile_user['cover'] = $active_cover;
+        }*/
+    }
+}
+
+
 ?>
 
 <style>
@@ -1536,35 +1598,45 @@ $profile_style = $profile_styles[$cover_file] ?? 'default';
     }
     
     /* 2. Игра Престолов - адаптивные модификации */
-    .profile-style-got {
-        --primary: #8b0000;
-        --secondary: #d4af37;
-    }
-    
-    @media (max-width: 768px) {
-        .profile-style-got .profile-header {
-            border-left: none;
-            border-right: none;
-        }
-        
-        .profile-style-got .profile-header::before {
-            height: 3px;
-        }
-    }
+
     
     /* 3. Хакасский стиль - адаптивные модификации */
-    .profile-style-khakas {
-        --primary: #4a6b22;
-        --secondary: #8a6d3b;
-    }
-    
-    @media (max-width: 768px) {
-        .profile-style-khakas .profile-header {
-            border: none;
-            border-bottom: 3px dashed var(--primary);
-            background-image: none;
-        }
-    }
+    /* Хакерский стиль (3.jpg) */
+.profile-style-khakas{
+    --primary-color: #00FF00; /* Классический зеленый хакерский */
+    --secondary-color: #00AA00;
+    --text-color: #00FF00;
+    --bg-color: #000000;
+    --card-bg: rgba(0, 20, 0, 0.9);
+    background: 
+        url('/assets/images/backgrounds/matrix-code.jpg') no-repeat center center fixed,
+        linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9));
+    background-size: cover;
+    font-family: 'Courier New', monospace;
+}
+
+.profile-style-khakas .profile-header {
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+    background: var(--card-bg);
+}
+
+.profile-style-khakas .profile-avatar {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.profile-style-khakas .btn-primary {
+    background: black;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    text-shadow: 0 0 5px var(--primary-color);
+}
+
+
+
+
+
     
     /* 4. Неоморфизм - адаптивные модификации */
     .profile-style-modern {
@@ -1711,7 +1783,718 @@ $profile_style = $profile_styles[$cover_file] ?? 'default';
             scroll-behavior: auto !important;
         }
     }
-    </style>
+
+
+
+
+
+
+    /* Добавить в CSS профиля */
+.crypto-card {
+    text-align: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border: 1px solid #e0e0e0;
+}
+
+.crypto-balance {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.crypto-balance .amount {
+    color: #f7931a; /* Оранжевый как у биткоина */
+}
+
+.crypto-balance .currency {
+    font-size: 16px;
+    color: #666;
+}
+
+.crypto-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+/* Добавить в CSS профиля */
+.crypto-card {
+    text-align: center;
+    background: #1a1a2e;
+    border: 1px solid #2d2d4d;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, #16213e 0%, #1a1a2e 100%);
+    color: #e6e6e6;
+    position: relative;
+    overflow: hidden;
+}
+
+.crypto-card::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(247, 147, 26, 0.1) 0%, transparent 70%);
+    animation: rotate 15s linear infinite;
+    z-index: 0;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.crypto-card h3 {
+    color: #f7931a;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.crypto-balance {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.crypto-balance .amount {
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(247, 147, 26, 0.5);
+}
+
+.crypto-balance .currency {
+    font-size: 1rem;
+    color: #f7931a;
+    background: rgba(247, 147, 26, 0.1);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.crypto-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.crypto-actions .btn {
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.crypto-actions .btn-primary {
+    background: linear-gradient(90deg, #f7931a 0%, #f9b54a 100%);
+    color: #1a1a2e;
+}
+
+.crypto-actions .btn-primary:hover {
+    background: linear-gradient(90deg, #f9b54a 0%, #f7931a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(247, 147, 26, 0.3);
+}
+
+.crypto-actions .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.crypto-actions .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Модальное окно в крипто-стиле */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: #1a1a2e;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    border: 1px solid #2d2d4d;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    color: #e6e6e6;
+}
+
+.modal-content h3 {
+    color: #f7931a;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.3s;
+}
+
+.close:hover {
+    color: #f7931a;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #aaa;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #2d2d4d;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #f7931a;
+    box-shadow: 0 0 0 2px rgba(247, 147, 26, 0.2);
+}
+
+#sendCurrencyForm button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, #f7931a 0%, #f9b54a 100%);
+    color: #1a1a2e;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+#sendCurrencyForm button:hover {
+    background: linear-gradient(90deg, #f9b54a 0%, #f7931a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(247, 147, 26, 0.3);
+}
+/* Crypto Popup Styles */
+.crypto-popup {
+    position: fixed;
+    bottom: -100%;
+    right: 20px;
+    width: 320px;
+    background: #1E1E1E;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: bottom 0.3s ease;
+    border: 1px solid #2D2D2D;
+    overflow: hidden;
+    color: #FFFFFF;
+}
+
+.crypto-popup.active {
+    bottom: 20px;
+}
+
+.crypto-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: #121212;
+    border-bottom: 1px solid #2D2D2D;
+}
+
+.crypto-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.crypto-logo i {
+    color: #F7931A;
+    font-size: 20px;
+}
+
+.crypto-close {
+    background: none;
+    border: none;
+    color: #AAAAAA;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.crypto-balance-card {
+    padding: 24px 16px;
+    text-align: center;
+    position: relative;
+}
+
+.network-badge {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: rgba(247, 147, 26, 0.1);
+    color: #F7931A;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.balance-amount {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 8px 0;
+}
+
+.balance-currency {
+    color: #AAAAAA;
+    font-size: 16px;
+}
+
+.crypto-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 0 16px 16px;
+}
+
+.crypto-action-btn {
+    background: #2D2D2D;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.crypto-action-btn:hover {
+    background: #3D3D3D;
+}
+
+.crypto-action-btn i {
+    font-size: 20px;
+}
+
+.crypto-account {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #121212;
+    border-top: 1px solid #2D2D2D;
+}
+
+.account-address {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+}
+
+.copy-btn {
+    background: none;
+    border: none;
+    color: #AAAAAA;
+    cursor: pointer;
+}
+
+/* Send Popup Styles */
+.crypto-send-popup {
+    position: fixed;
+    bottom: -100%;
+    right: 20px;
+    width: 320px;
+    background: #1E1E1E;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    transition: bottom 0.3s ease;
+    border: 1px solid #2D2D2D;
+    overflow: hidden;
+    color: #FFFFFF;
+}
+
+.crypto-send-popup.active {
+    bottom: 20px;
+}
+
+.send-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: #121212;
+    border-bottom: 1px solid #2D2D2D;
+    position: relative;
+}
+
+.send-header h3 {
+    margin: 0;
+    font-size: 18px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.back-btn, .close-btn {
+    background: none;
+    border: none;
+    color: #AAAAAA;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 1;
+}
+
+#sendCryptoForm {
+    padding: 16px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #AAAAAA;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background: #2D2D2D;
+    border: 1px solid #3D3D3D;
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-size: 16px;
+}
+
+.amount-input {
+    position: relative;
+}
+
+.amount-input .currency {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #AAAAAA;
+}
+
+.balance-hint {
+    font-size: 12px;
+    color: #AAAAAA;
+    margin-top: 4px;
+    text-align: right;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: #F7931A;
+    border: none;
+    border-radius: 8px;
+    color: #121212;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.submit-btn:hover {
+    background: #FFAA33;
+}
+/* Игра Престолов (2.jpg) */
+.profile-style-got {
+    --primary-color: #00308F; /* Темно-синий вместо красного */
+    --secondary-color: #72A0C1; /* Светло-голубой */
+    --text-color: #f8f8f8;
+    --bg-color: #0a0a1a; /* Темно-синий фон */
+    --card-bg: rgba(10, 20, 45, 0.9); /* Синий оттенок */
+    background: 
+        url('/assets/images/backgrounds/got-bg-blue.jpg') no-repeat center center fixed,
+        linear-gradient(rgba(0, 0, 20, 0.8), rgba(0, 0, 20, 0.8));
+    background-size: cover;
+    font-family: 'Times New Roman', serif;
+}
+
+.profile-style-got .profile-header {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 15px rgba(0, 48, 143, 0.5);
+    background: var(--card-bg);
+}
+
+.profile-style-got .profile-tab.active {
+    background: var(--primary-color);
+    color: silver; /* Серебро вместо золота */
+    font-weight: bold;
+    border-bottom-color: var(--secondary-color);
+}
+
+.profile-style-got .btn-primary {
+    background: linear-gradient(to right, var(--primary-color), #0047AB);
+    border: 1px solid var(--secondary-color);
+    font-family: 'Russo One', sans-serif;
+}
+.crypto-wallet-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(145deg, #00308F, #0047AB);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 20px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 48, 143, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 999;
+    transition: all 0.3s ease;
+}
+
+.crypto-wallet-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 48, 143, 0.6);
+}
+
+.crypto-wallet-btn i {
+    font-size: 20px;
+}
+
+
+
+
+
+
+
+
+
+/* Бронзовое оформление (3rd level) */
+.profile-style-bronze {
+    --primary-color: #cd7f32; /* бронзовый */
+    --secondary-color: #8b4513; /* коричневый */
+    --text-color: #333;
+    --bg-color: #f5f5dc; /* бежевый */
+    --card-bg: rgba(245, 245, 220, 0.9);
+    background: #f5f5dc;
+    font-family: 'Arial', sans-serif;
+    background: 
+            url('/assets/images/backgrounds/bronze.jpg') center/cover no-repeat,
+            linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+}
+
+.profile-style-bronze .profile-header {
+    border: 3px solid var(--primary-color);
+    background: var(--card-bg);
+}
+
+.profile-style-bronze .profile-tab.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.profile-style-bronze .btn-primary {
+    background: var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    color: white;
+}
+
+/* Серебряное оформление (2nd level) */
+.profile-style-silver {
+    --primary-color: #c0c0c0; /* серебряный */
+    --secondary-color: #a9a9a9; /* темно-серый */
+    --text-color: #333;
+    --bg-color: #f8f8f8;
+    --card-bg: rgba(248, 248, 248, 0.95);
+    background: #f8f8f8;
+    font-family: 'Segoe UI', sans-serif;
+    background: 
+            url('/assets/images/backgrounds/silver.jpg') center/cover no-repeat,
+            linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+}
+
+.profile-style-silver .profile-header {
+    border: 3px solid var(--primary-color);
+    background: var(--card-bg);
+    box-shadow: 0 0 15px rgba(192, 192, 192, 0.5);
+}
+
+.profile-style-silver .profile-tab.active {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.profile-style-silver .btn-primary {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    color: white;
+}
+
+/* Золотое оформление (1st level) */
+.profile-style-gold {
+    --primary-color: #ffd700; /* золотой */
+    --secondary-color: #daa520; /* золотистый */
+    --text-color: #333;
+    --bg-color: #fffacd; /* лимонный */
+    --card-bg: rgba(255, 250, 205, 0.9);
+    background: #fffacd;
+    font-family: 'Georgia', serif;
+    background: 
+            url('/assets/images/backgrounds/gold.jpg') center/cover no-repeat,
+            linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+}
+
+.profile-style-gold .profile-header {
+    border: 3px solid var(--primary-color);
+    background: var(--card-bg);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.profile-style-gold .profile-tab.active {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    color: #333;
+}
+
+.profile-style-gold .btn-primary {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    color: #333;
+    font-weight: bold;
+}
+
+/* VIP оформление (premium) */
+.profile-style-vip {
+    --primary-color: #9400d3; /* фиолетовый */
+    --secondary-color: #ff00ff; /* пурпурный */
+    --text-color: #fff;
+    --bg-color: #000;
+    --card-bg: rgba(20, 0, 30, 0.9);
+    background: 
+        radial-gradient(circle at 20% 30%, var(--primary-color), transparent 50%),
+        radial-gradient(circle at 80% 70%, var(--secondary-color), transparent 50%),
+        var(--bg-color);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.profile-style-vip .profile-header {
+    border: 2px solid var(--primary-color);
+    background: var(--card-bg);
+    box-shadow: 0 0 30px var(--primary-color);
+}
+
+.profile-style-vip .profile-tab.active {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    text-shadow: 0 0 5px white;
+}
+
+.profile-style-vip .btn-primary {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
 </style>
 
 <div class="profile-container profile-style-<?= $profile_style ?>">
@@ -1850,7 +2633,14 @@ $profile_style = $profile_styles[$cover_file] ?? 'default';
                 <?php endif; ?>
             </div>
         </div>
-        
+
+        <?php if ($is_own_profile): ?>
+            <button onclick="toggleCryptoPopup()" class="crypto-wallet-btn">
+                <i class="fab fa-ethereum"></i> ConnectCoin
+            </button>
+        <?php endif; ?>
+
+
         <!-- Вкладки -->
         <div class="profile-tabs">
             <a href="#" class="profile-tab active" data-tab="posts">
@@ -2070,7 +2860,89 @@ $profile_style = $profile_styles[$cover_file] ?? 'default';
         </div>
     </div>
 </div>
+<!-- Добавить в конец body -->
+<div id="cryptoPopup" class="crypto-popup">
+    <div class="crypto-header">
+        <div class="crypto-logo">
+            <i class="fab fa-ethereum"></i>
+            <span>ConnectCoin</span>
+        </div>
+        <button class="crypto-close" onclick="closeCryptoPopup()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="crypto-balance-card">
+        <div class="network-badge">Mainnet</div>
+        <div class="balance-amount" id="cryptoBalance">0.00</div>
+        <div class="balance-currency">CC</div>
+    </div>
+    
+    <div class="crypto-actions">
+        <button class="crypto-action-btn" onclick="showSendPopup()">
+            <i class="fas fa-paper-plane"></i>
+            <span>Отправить</span>
+        </button>
+        <a href="/shop.php" class="crypto-action-btn">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Магазин</span>
+        </a>
+    </div>
+    
+    <div class="crypto-account">
+        <div class="account-address" id="walletAddress">
+            0x7f...3a4b
+        </div>
+        <button class="copy-btn" onclick="copyWalletAddress()">
+            <i class="far fa-copy"></i>
+        </button>
+    </div>
+</div>
 
+<!-- Отдельное модальное окно для отправки -->
+<div id="sendCryptoPopup" class="crypto-send-popup">
+    <div class="send-header">
+        <button class="back-btn" onclick="backToWallet()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h3>Отправить ConnectCoin</h3>
+        <button class="close-btn" onclick="closeSendPopup()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <form id="sendCryptoForm" onsubmit="sendCurrency(event)">
+        <input type="hidden" name="to_user_id" id="sendToUserId">
+        
+        <div class="form-group">
+            <label for="recipient">Получатель</label>
+            <input type="text" id="recipient" name="recipient" 
+                   placeholder="Имя пользователя или адрес" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="amount">Сумма</label>
+            <div class="amount-input">
+                <input type="number" id="amount" name="amount" 
+                       step="0.01" min="0.01" placeholder="0.00" required>
+                <span class="currency">CC</span>
+            </div>
+            <div class="balance-hint">
+                Доступно: <span id="availableBalance">0.00</span> CC
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="message">Сообщение (необязательно)</label>
+            <input type="text" id="message" name="message" 
+                   placeholder="Назначение платежа">
+        </div>
+        
+        <button type="submit" class="submit-btn">
+            Подтвердить перевод
+        </button>
+    </form>
+</div>
 
 <script>
 // Переключение вкладок
@@ -2166,6 +3038,350 @@ function removeFriend(id){
             location.reload();
         }
     });
+}
+
+
+
+
+
+
+// Добавить в script-секцию профиля
+function showSendModal(userId = null, username = null) {
+    const modal = document.getElementById('sendModal');
+    const form = document.getElementById('sendCurrencyForm');
+    
+    if (userId) {
+        document.getElementById('sendToUserId').value = userId;
+        form.querySelector('h3').textContent = `Отправить ConnectCoin пользователю @${username}`;
+    } else {
+        // Если отправляем с собственного профиля, нужно будет выбрать получателя
+        // Здесь можно добавить поле для ввода username получателя
+        document.getElementById('sendToUserId').value = '';
+        form.querySelector('h3').textContent = 'Отправить ConnectCoin';
+    }
+    
+    modal.style.display = 'block';
+}
+
+function closeSendModal() {
+    document.getElementById('sendModal').style.display = 'none';
+}
+
+function sendCurrency(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const toUserId = document.getElementById('sendToUserId').value;
+    const amount = parseInt(document.getElementById('sendAmount').value);
+    const message = document.getElementById('sendMessage').value;
+    
+    if (!toUserId || !amount || amount <= 0) {
+        alert('Пожалуйста, укажите получателя и сумму');
+        return;
+    }
+    
+    fetch('/actions/transfer_currency.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            to_user_id: toUserId,
+            amount: amount,
+            message: message
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Перевод выполнен успешно!');
+            closeSendModal();
+            location.reload();
+        } else {
+            alert(data.message || 'Ошибка при переводе');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Произошла ошибка при отправке');
+    });
+}
+
+// Закрытие модального окна при клике вне его
+window.onclick = function(event) {
+    const modal = document.getElementById('sendModal');
+    if (event.target == modal) {
+        closeSendModal();
+    }
+}
+// Добавить в script-секцию профиля
+function copyWalletAddress(btn) {
+    const address = btn.closest('.crypto-wallet-address').querySelector('.address').textContent;
+    navigator.clipboard.writeText(address).then(() => {
+        const originalIcon = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.innerHTML = originalIcon;
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+
+let currentRecipientId = null;
+let currentRecipientUsername = null;
+
+function showSendModal(userId = null, username = null) {
+    const modal = document.getElementById('sendModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const recipientGroup = document.getElementById('recipientGroup');
+    
+    currentRecipientId = userId;
+    currentRecipientUsername = username;
+    
+    if (userId) {
+        // Если отправляем конкретному пользователю (из его профиля)
+        modalTitle.textContent = `Отправить CC пользователю @${username}`;
+        document.getElementById('sendToUserId').value = userId;
+        recipientGroup.style.display = 'none';
+    } else {
+        // Если открываем форму из своего профиля
+        modalTitle.textContent = 'Отправить ConnectCoin';
+        document.getElementById('sendToUserId').value = '';
+        recipientGroup.style.display = 'block';
+    }
+    
+    // Сброс формы
+    document.getElementById('sendAmount').value = '';
+    document.getElementById('sendMessage').value = '';
+    document.getElementById('recipientUsername').value = '';
+    
+    modal.style.display = 'block';
+    document.getElementById('sendAmount').focus();
+}
+
+function closeSendModal() {
+    document.getElementById('sendModal').style.display = 'none';
+    document.getElementById('sendCurrencyForm').reset();
+}
+
+async function sendCurrency(event) {
+    event.preventDefault();
+    
+    try {
+        // Получаем данные формы
+        const form = event.target;
+        const formData = new FormData(form);
+        const amount = parseFloat(formData.get('amount'));
+        const message = formData.get('message') || '';
+        const recipientId = formData.get('to_user_id');
+        const recipientUsername = formData.get('recipient')?.trim();
+
+        // Валидация
+        if (isNaN(amount)) throw new Error("Введите корректную сумму");
+        if (amount <= 0) throw new Error("Сумма должна быть больше 0");
+
+        let finalRecipientId = recipientId;
+
+        // Если нет ID, но есть username
+        if (!finalRecipientId && recipientUsername) {
+            const cleanUsername = recipientUsername.replace(/^@/, '');
+            if (!cleanUsername) throw new Error("Введите имя пользователя");
+
+            // Ищем пользователя
+            const response = await fetch(`/actions/find_user.php?username=${encodeURIComponent(cleanUsername)}`);
+            const text = await response.text();
+            
+            let data;
+            try {
+                data = text ? JSON.parse(text) : {};
+            } catch (e) {
+                throw new Error("Ошибка обработки ответа сервера");
+            }
+            
+            if (!response.ok || !data?.success) {
+                throw new Error(data?.message || "Пользователь не найден");
+            }
+            
+            finalRecipientId = data.user.id;
+        }
+
+        if (!finalRecipientId) throw new Error("Не указан получатель");
+
+        // Показываем лоадер
+        form.querySelector('button[type="submit"]').disabled = true;
+        
+        // Отправка запроса
+        const response = await fetch('/actions/transfer_currency.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                to_user_id: finalRecipientId, 
+                amount: amount.toFixed(2),
+                message: message 
+            })
+        });
+
+        const text = await response.text();
+        let result;
+        try {
+            result = text ? JSON.parse(text) : {};
+        } catch (e) {
+            throw new Error("Ошибка обработки ответа сервера");
+        }
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Ошибка перевода");
+        }
+
+        // Успех
+        showCryptoAlert('success', `Успешно отправлено ${amount.toFixed(2)} CC`);
+        closeSendPopup();
+        updateBalance();
+        
+    } catch (error) {
+        console.error("Transfer error:", error);
+        showCryptoAlert('error', error.message || "Ошибка перевода");
+    } finally {
+        // Восстанавливаем кнопку
+        if (event.target && event.target.querySelector('button[type="submit"]')) {
+            event.target.querySelector('button[type="submit"]').disabled = false;
+        }
+    }
+}
+
+function updateBalance() {
+    fetch('actions/get_balance.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка сети');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                throw new Error('Ошибка при получении баланса');
+            }
+            //<div class="balance-amount" id="cryptoBalance">0.00</div>
+            const balanceElement = document.querySelector('.balance-amount');
+            if (balanceElement) {
+                balanceElement.textContent = parseFloat(data.balance).toLocaleString('ru-RU', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Balance update error:', error);
+        });
+}
+
+function showCryptoAlert(type, message) {
+    const alert = document.createElement('div');
+    alert.className = `crypto-alert crypto-alert-${type}`;
+    alert.innerHTML = `
+        <div class="crypto-alert-icon">
+            ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>'}
+        </div>
+        <div class="crypto-alert-message">${message}</div>
+    `;
+    
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        alert.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        alert.classList.remove('show');
+        setTimeout(() => {
+            alert.remove();
+        }, 300);
+    }, 3000);
+}
+
+// Закрытие модального окна при клике вне его
+window.onclick = function(event) {
+    const modal = document.getElementById('sendModal');
+    if (event.target == modal) {
+        closeSendModal();
+    }
+}
+// Управление крипто-попапом
+function toggleCryptoPopup() {
+    const popup = document.getElementById('cryptoPopup');
+    popup.classList.toggle('active');
+    
+    if (popup.classList.contains('active')) {
+        updateBalance();
+    }
+}
+
+function closeCryptoPopup() {
+    document.getElementById('cryptoPopup').classList.remove('active');
+}
+
+// Управление попапом отправки
+function showSendPopup(userId = null, username = null) {
+    const sendPopup = document.getElementById('sendCryptoPopup');
+    const cryptoPopup = document.getElementById('cryptoPopup');
+    
+    if (userId) {
+        document.getElementById('sendToUserId').value = userId;
+        document.getElementById('recipient').value = username || '';
+        document.getElementById('recipient').readOnly = true;
+    } else {
+        document.getElementById('sendToUserId').value = '';
+        document.getElementById('recipient').value = '';
+        document.getElementById('recipient').readOnly = false;
+    }
+    
+    cryptoPopup.classList.remove('active');
+    sendPopup.classList.add('active');
+    
+    // Обновляем доступный баланс
+    fetch('/actions/get_balance.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('availableBalance').textContent = 
+                    parseFloat(data.balance).toFixed(2);
+            }
+        });
+}
+
+function closeSendPopup() {
+    document.getElementById('sendCryptoPopup').classList.remove('active');
+    document.getElementById('sendCryptoForm').reset();
+}
+
+function backToWallet() {
+    closeSendPopup();
+    toggleCryptoPopup();
+}
+
+// Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    // Генерируем "адрес кошелька"
+    const userId = <?= $user['id'] ?? 0 ?>;
+    const username = '<?= $user['username'] ?? '' ?>';
+    if (userId) {
+        const hash = sha256(userId + username).substring(0, 24);
+        const walletAddress = '0x' + hash.substring(0, 4) + '...' + hash.substring(20);
+        document.getElementById('walletAddress').textContent = walletAddress;
+    }
+});
+
+// Простая функция хеширования для демонстрации
+function sha256(str) {
+    // В реальном приложении используйте window.crypto.subtle.digest
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash.toString(16);
 }
 </script>
 

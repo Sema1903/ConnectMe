@@ -1,14 +1,16 @@
 <?php
 require_once '../includes/config.php';
 require_once '../includes/functions.php';
+require_once '../includes/auth.php';
 
+$user = getCurrentUser($db);
 $page = $_GET['page'] ?? 1;
 $limit = 10;
 $offset = ($page - 1) * $limit;
 $posts = getPosts($db, $limit, $offset);
 
 foreach ($posts as $post): ?>
-    <div class="post-card" id="post-<?= $post['id'] ?>">
+    <div class="post-card <?= $post['feeling'] ? ' ' . htmlspecialchars($post['feeling']) : '' ?>" id="post-<?= $post['id'] ?>">
         <div class="post-header">
             <a href="/profile.php?id=<?= $post['user_id'] ?>" class="post-author">
                 <img src="assets/images/avatars/<?= htmlspecialchars($post['avatar']) ?>" alt="User" class="author-avatar">
@@ -21,7 +23,7 @@ foreach ($posts as $post): ?>
         </div>
         
         <div class="post-content">
-            <p class="post-text"><?= $post['content'] ?></p>
+            <p class="post-text"><?= processMentions(nl2br(htmlspecialchars($post['content'])), $db) ?></p>
             <?php if ($post['feeling']): ?>
                 <div class="post-feeling">
                     <?php 
@@ -62,7 +64,7 @@ foreach ($posts as $post): ?>
         
         <div class="post-actions">
             <div class="post-action-btn like-btn" data-post-id="<?= $post['id'] ?>">
-                <i class="far fa-thumbs-up"></i>
+                <i class="<?= $post['is_liked'] ? 'fas' : 'far' ?> fa-thumbs-up"></i>
                 <span>Нравится</span>
             </div>
             <div class="post-action-btn comment-btn" data-post-id="<?= $post['id'] ?>">
@@ -75,20 +77,28 @@ foreach ($posts as $post): ?>
             </div>
         </div>
         
-        <!-- Комментарии -->
-        <div class="comments-section" id="comments-<?= $post['id'] ?>" style="display: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
-            <?php if ($user): ?>
-                <div class="add-comment" style="display: flex; margin-bottom: 15px;">
-                    <img src="assets/images/avatars/<?= $user['avatar'] ?>" alt="User" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;">
-                    <form class="comment-form" data-post-id="<?= $post['id'] ?>" style="flex-grow: 1;">
-                        <input type="text" name="comment" placeholder="Написать комментарий..." style="width: 100%; padding: 8px 12px; border-radius: 20px; border: 1px solid #ddd; outline: none;">
+       <!-- Секция комментариев (изначально скрыта) -->
+       <div class="comments-section" id="comments-<?= $post['id'] ?>" style="display: none;">
+                <?php if ($user): ?>
+                <div class="add-comment">
+                    <img src="assets/images/avatars/<?= $user['avatar'] ?>" class="comment-avatar">
+                    <form class="comment-form" data-post-id="<?= $post['id'] ?>">
+                        <input type="text" name="comment" placeholder="Написать комментарий..." required>
+                        <button type="submit" style="display:none"></button>
                     </form>
                 </div>
-            <?php endif; ?>
-            
-            <div class="comments-list" id="comments-list-<?= $post['id'] ?>">
-                <!-- Комментарии будут загружены по запросу -->
+                <?php endif; ?>
+                
+                <div class="comments-list" id="comments-list-<?= $post['id'] ?>"></div>
             </div>
         </div>
     </div>
-<?php endforeach;
+<?php endforeach;?>
+<script>
+    // Инициализируем обработчики для только что загруженных постов
+    if (typeof initPostHandlers === 'function') {
+        const newPosts = document.querySelectorAll('.post-card');
+        initPostHandlers(newPosts);
+    }
+</script>
+<script src = '../assets/js/main.js'></script>

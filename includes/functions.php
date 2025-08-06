@@ -101,7 +101,7 @@ function addPost($db, $user_id, $content, $image = null, $feeling = null) {
     
     if ($result) {
         $post_id = $db->lastInsertRowID();
-        
+        rewardForAction($db, $user_id, 'post');
         // Обрабатываем упоминания
         preg_match_all('/@([a-zA-Z0-9_]+)/', $content, $matches);
         $mentioned_usernames = array_unique($matches[1]);
@@ -146,6 +146,11 @@ function likePost($db, $user_id, $post_id) {
         $stmt->bindValue(1, $user_id, SQLITE3_INTEGER);
         $stmt->bindValue(2, $post_id, SQLITE3_INTEGER);
         $stmt->execute();
+        $dop = $db -> prepare('SELECT * FROM posts WHERE id = :id');
+        $dop -> bindValue(':id', $post_id, SQLITE3_INTEGER);
+        $records = $dop -> execute() -> fetchArray(SQLITE3_ASSOC);
+        $post_author = $records['user_id'];
+        rewardForAction($db, $post_author, 'like_received');
         return ['success' => true, 'action' => 'like'];
     }
 }
@@ -155,6 +160,13 @@ function addComment($db, $post_id, $user_id, $content) {
     $stmt->bindValue(1, $post_id, SQLITE3_INTEGER);
     $stmt->bindValue(2, $user_id, SQLITE3_INTEGER);
     $stmt->bindValue(3, $content, SQLITE3_TEXT);
+    $dop = $db -> prepare('SELECT * FROM posts WHERE id = :id');
+    $dop -> bindValue(':id', $post_id, SQLITE3_INTEGER);
+    $records = $dop -> execute() -> fetchArray(SQLITE3_ASSOC);
+    $post_author = $records['user_id'];
+    if($post_author != $user_id){
+        rewardForAction($db, $post_author, 'comment');
+    }
     return $stmt->execute();
 }
 
@@ -428,25 +440,87 @@ function getLiveStreams($db) {
                                 $text
                             );
                         }
-                        function getPosts($db, $limit = 10, $offset = 0) {
-                            $stmt = $db->prepare("
-                                SELECT p.*, u.username, u.full_name, u.avatar, 
-                                       (SELECT COUNT(*) FROM likes WHERE post_id = p.id) as likes_count,
-                                       (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count
-                                FROM posts p
-                                JOIN users u ON p.user_id = u.id
-                                ORDER BY p.created_at DESC
-                                LIMIT ? OFFSET ?
-                            ");
-                            $stmt->bindValue(1, $limit, SQLITE3_INTEGER);
-                            $stmt->bindValue(2, $offset, SQLITE3_INTEGER);
-                            $result = $stmt->execute();
+                        function getPosts($db, $limit = 10, $offset = 0, $user_id = null) {
+                            $query = "SELECT p.*, u.username, u.full_name, u.avatar,
+                                      (SELECT COUNT(*) FROM likes WHERE post_id = p.id) as likes_count,
+                                      (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count";
+                            
+                            if ($user_id) {
+                                $query .= ", EXISTS(SELECT 1 FROM likes WHERE post_id = p.id AND user_id = $user_id) as is_liked";
+                            } else {
+                                $query .= ", 0 as is_liked";
+                            }
+                            
+                            $query .= " FROM posts p
+                                       JOIN users u ON p.user_id = u.id
+                                       ORDER BY p.created_at DESC
+                                       LIMIT $limit OFFSET $offset";
+                            
+                            $result = $db->query($query);
                             
                             $posts = [];
                             while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-                                $row['content'] = processMentions($row['content'], $db);
+                                $row['content'] = processMentions(nl2br(htmlspecialchars($row['content'])), $db);
                                 $posts[] = $row;
                             }
                             
                             return $posts;
                         }
+// Добавляем в functions.php
+
+// Получить баланс пользователя
+function getUserBalance($db, $user_id) {
+    $stmt = $db->prepare("SELECT COALESCE(SUM(amount), 0) as balance FROM game_currency_history WHERE user_id = ?");
+    $stmt->bindValue(1, $user_id, SQLITE3_INTEGER);
+    $result = $stmt->execute();
+    return $result->fetchArray(SQLITE3_ASSOC)['balance'] ?? 0;
+}
+
+// Добавить валюту пользователю
+function addCurrency($db, $user_id, $amount, $reason) {
+    $stmt = $db->prepare("INSERT INTO game_currency_history (user_id, amount, reason) VALUES (?, ?, ?)");
+    $stmt->bindValue(1, $user_id, SQLITE3_INTEGER);
+    $stmt->bindValue(2, $amount, SQLITE3_INTEGER);
+    $stmt->bindValue(3, $reason, SQLITE3_TEXT);
+    return $stmt->execute();
+}
+
+// Перевести валюту другому пользователю
+function transferCurrency($db, $from_user_id, $to_user_id, $amount) {
+    // Принудительно завершаем все возможные транзакции
+$db->exec('ROLLBACK');
+    if ($amount <= 0) return false;
+    
+    $balance = getUserBalance($db, $from_user_id);
+    if ($balance < $amount) return false;
+    
+    $db->exec('BEGIN TRANSACTION');
+    
+    try {
+        // Снимаем у отправителя
+        addCurrency($db, $from_user_id, -$amount, "Перевод пользователю ID $to_user_id");
+        
+        // Добавляем получателю
+        addCurrency($db, $to_user_id, $amount, "Перевод от пользователя ID $from_user_id");
+        
+        $db->exec('COMMIT');
+        return true;
+    } catch (Exception $e) {
+        $db->exec('ROLLBACK');
+        return false;
+    }
+}
+
+// Начислить валюту за действия
+function rewardForAction($db, $user_id, $action_type) {
+    $rewards = [
+        'post' => 5,       // 5 монет за пост
+        'like_received' => 1, // 1 монета за полученный лайк
+        'comment' => 2     // 2 монеты за комментарий
+    ];
+    
+    if (isset($rewards[$action_type])) {
+        return addCurrency($db, $user_id, $rewards[$action_type], "Награда за $action_type");
+    }
+    return false;
+}

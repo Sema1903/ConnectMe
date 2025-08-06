@@ -51,10 +51,10 @@ document.addEventListener('DOMContentLoaded', function() {
         canvasWidth: 600,
         canvasHeight: 400,
         gridSize: 20,
-        initialSpeed: 800,
-        minSpeed: 400,
+        initialSpeed: 500,
+        minSpeed: 200,
         speedStep: 2,
-        speedChange: 0.985
+        speedChange: 0.95
     };
     
     // Элементы DOM

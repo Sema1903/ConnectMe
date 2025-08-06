@@ -191,14 +191,42 @@ try {
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id)
             );
+
             CREATE TABLE IF NOT EXISTS game_items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 description TEXT NOT NULL,
-                price INTEGER NOT NULL,
                 icon TEXT NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                price INTEGER NOT NULL,
+                quantity INTEGER NOT NULL DEFAULT 1,
+                type TEXT NOT NULL DEFAULT 'regular', -- 'regular', 'premium', 'avatar_frame', 'profile_cover'
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+                        CREATE TABLE IF NOT EXISTS user_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                item_id INTEGER NOT NULL,
+                purchase_date TIMESTAMP NOT NULL,
+                is_active BOOLEAN NOT NULL DEFAULT 0,
+                FOREIGN KEY (user_id) REFERENCES users(id),
+                FOREIGN KEY (item_id) REFERENCES game_items(id)
+            );
+            
+            CREATE TABLE IF NOT EXISTS gifts_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                sender_id INTEGER NOT NULL,
+                receiver_id INTEGER NOT NULL,
+                item_id INTEGER NOT NULL,
+                gift_date TIMESTAMP NOT NULL,
+                FOREIGN KEY (sender_id) REFERENCES users(id),
+                FOREIGN KEY (receiver_id) REFERENCES users(id),
+                FOREIGN KEY (item_id) REFERENCES game_items(id)
+            );
+--            INSERT INTO game_items (name, description, icon, price, quantity, type) VALUES
+--('Бронзовое оформление', 'Оформление страницы 3-го уровня', 'square', 10, 10, '3rd lavel'),
+--('Серебряное фофрмление', 'Офоормление страницы 2-го уровня', 'image', 20, 5, '2nd lavel'),
+--('Золотой оформление', 'Офоормление страницы 1-го уровня', 'star', 50, 3, '1st lavel'),
+--('VIP-оформление', 'Эксклюзивное оформление страницы', 'crown', 100, 1, 'premium');
     ");
 } catch (Exception $e) {
     die("Ошибка подключения к базе данных: " . $e->getMessage());

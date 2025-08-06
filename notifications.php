@@ -305,6 +305,9 @@ require_once 'includes/header.php';
                                         case 'friend_request': ?>
                                             Отправил вам запрос в друзья
                                             <?php break; ?>
+                                        <?php case 'currency_received':?>
+                                            Перевел(a) вам СС
+                                            <?php break; ?>
                                         <?php case 'friend_request_accepted': ?>
                                             Принял ваш запрос в друзья
                                             <?php break; ?>
@@ -500,6 +503,94 @@ function showToast(message, type) {
 
 .toast-notification.error {
     background-color: #F44336;
+}
+
+
+
+
+/* Добавить в CSS */
+.crypto-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1001;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+    max-width: 300px;
+}
+
+.crypto-alert.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.crypto-alert-success {
+    background: #2e7d32;
+    color: white;
+    border-left: 4px solid #4caf50;
+}
+
+.crypto-alert-error {
+    background: #c62828;
+    color: white;
+    border-left: 4px solid #f44336;
+}
+
+.crypto-alert-icon {
+    font-size: 20px;
+}
+
+.crypto-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.crypto-network {
+    font-size: 0.7rem;
+    background: rgba(247, 147, 26, 0.2);
+    color: #f7931a;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.crypto-wallet-address {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    justify-content: center;
+}
+
+.copy-btn {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.copy-btn:hover {
+    color: #f7931a;
+    background: rgba(247, 147, 26, 0.1);
+}
+
+.copy-btn.copied {
+    color: #4caf50;
 }
 </style>
 

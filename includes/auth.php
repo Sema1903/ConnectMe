@@ -1,4 +1,6 @@
 <?php
+ini_set('session.gc_maxlifetime', 360000);
+session_set_cookie_params(360000);
 session_start();
 function registerUser($db, $username, $password, $full_name, $email) {
     // Проверяем, существует ли пользователь с таким именем или email
