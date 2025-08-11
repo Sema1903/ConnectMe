@@ -34,6 +34,22 @@ if (isset($_GET['user_id'])) {
 }
 
 require_once 'includes/header.php';
+
+// Помечаем сообщения как прочитанные при открытии чата
+if (isset($_GET['user_id'])) {
+    $friend_id = (int)$_GET['user_id'];
+    $db->exec("UPDATE messages SET is_read = 1 WHERE receiver_id = {$user['id']} AND sender_id = $friend_id");
+    
+    // Обновляем счетчик в сессии
+    $_SESSION['unread_messages'] = $db->querySingle("
+        SELECT COUNT(*) 
+        FROM messages 
+        WHERE receiver_id = {$user['id']} AND is_read = 0
+    ");
+}
+
+
+
 ?>
 
 <style>
@@ -326,6 +342,118 @@ require_once 'includes/header.php';
         display: none !important;
     }
 }
+/* Чат */
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative; /* Добавляем для позиционирования */
+    margin-right: -160px;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: var(--secondary-color);
+    background-image: url('assets/images/chat-bg-pattern.png');
+    background-repeat: repeat;
+    background-blend-mode: overlay;
+    padding-bottom: 80px; /* Добавляем отступ снизу для input */
+}
+
+.message {
+    margin-bottom: 15px;
+    display: flex;
+    width: 100%; /* Занимаем всю ширину */
+}
+
+.message-outgoing {
+    justify-content: flex-end;
+    padding-left: 15%; /* Уменьшаем отступ справа */
+}
+
+.message-incoming {
+    justify-content: flex-start;
+    padding-right: 15%; /* Уменьшаем отступ слева */
+}
+
+.message-bubble {
+    max-width: 85%; /* Увеличиваем максимальную ширину */
+    min-width: 30%; /* Добавляем минимальную ширину */
+    padding: 10px 15px;
+    border-radius: 18px;
+    position: relative;
+    word-wrap: break-word;
+}
+
+/* Фиксированное поле ввода */
+.chat-input {
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+    background: var(--card-bg);
+    position: fixed; /* Фиксируем внизу */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .messages-container {
+        height: calc(100vh - 60px);
+    }
+    
+    .contacts-sidebar {
+        width: 100%;
+        display: <?= isset($_GET['user_id']) ? 'none' : 'flex' ?>;
+    }
+    
+    .chat-container {
+        display: <?= isset($_GET['user_id']) ? 'flex' : 'none' ?>;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 100vh;
+        margin-top: 140px;
+    }
+    .chat-input {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: 100%;
+    }
+    
+    .message-outgoing {
+        padding-left: 10%;
+    }
+    
+    .message-incoming {
+        padding-right: 10%;
+    }
+    
+    .message-bubble {
+        max-width: 90%;
+    }
+}
+
+/* Для iPhone с "челкой" */
+@supports(padding-bottom: env(safe-area-inset-bottom)) {
+    .chat-input {
+        padding-bottom: calc(15px + env(safe-area-inset-bottom));
+    }
+    
+    .chat-messages {
+        padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    }
+}
 </style>
 
 <div class="messages-container">
@@ -401,7 +529,7 @@ require_once 'includes/header.php';
                 <?php endforeach; ?>
             </div>
             
-            <!-- Форма отправки -->
+            <!-- В разделе чата обновляем только блок с формой ввода -->
             <div class="chat-input">
                 <form class="chat-form" id="send-message-form">
                     <input type="text" name="message" placeholder="Написать сообщение..." autocomplete="off">
@@ -411,49 +539,50 @@ require_once 'includes/header.php';
                 </form>
             </div>
             
-            <script>
+<script>
             // Отправка сообщения
-            document.getElementById('send-message-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const input = this.querySelector('input[name="message"]');
-                const message = input.value.trim();
-                
-                if (message) {
-                    fetch('/actions/send_message.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            receiver_id: <?= $current_friend['id'] ?>,
-                            message: message
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Добавляем сообщение в чат
-                            const messagesContainer = document.getElementById('chat-messages');
-                            const messageElement = document.createElement('div');
-                            messageElement.className = 'message message-outgoing';
-                            messageElement.innerHTML = `
-                                <div class="message-bubble">
-                                    ${message}
-                                    <div class="message-time">Только что</div>
-                                </div>
-                            `;
-                            messagesContainer.appendChild(messageElement);
-                            input.value = '';
-                            scrollToBottom();
-                        }
-                    });
-                }
-            });
+document.getElementById('send-message-form')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const input = this.querySelector('input[name="message"]');
+    const message = input.value.trim();
+    
+    if (message) {
+        fetch('/actions/send_message.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                receiver_id: <?= $current_friend['id'] ?? 0 ?>,
+                message: message
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const messagesContainer = document.getElementById('chat-messages');
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message message-outgoing';
+                messageElement.innerHTML = `
+                    <div class="message-bubble">
+                        ${message}
+                        <div class="message-time">Только что</div>
+                    </div>
+                `;
+                messagesContainer.appendChild(messageElement);
+                input.value = '';
+                scrollToBottom();
+            }
+        });
+    }
+});
             
             // Прокрутка вниз
             function scrollToBottom() {
                 const messagesContainer = document.getElementById('chat-messages');
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                if (messagesContainer) {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
             }
             
             // При загрузке страницы

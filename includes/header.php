@@ -3,10 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="white.png">
     <title><?= isset($pageTitle) ? $pageTitle : 'ConnectMe' ?></title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Для Android/Windows -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <!-- Для iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
+
+
+    
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <style>
+        /* Фикс для масштабирования на iOS */
+        input, textarea, select {
+            font-size: 16px !important;
+        }
+        
+        /* Для Safari */
+        @supports (-webkit-touch-callout: none) {
+            input, textarea, select {
+                font-size: 16px !important;
+            }
+        }
+        
+        /* Фикс для Android */
+        @media screen and (-webkit-min-device-pixel-ratio:0) {
+            input, textarea, select {
+                font-size: 16px !important;
+            }
+        }
+    </style>
+    
+    <style>
+    body {
+  margin: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) 
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
+  min-height: 100vh;       /* Вместо height */
+  overflow-y: auto;        /* Разрешаем вертикальный скролл */
+  -webkit-overflow-scrolling: touch;  /* Плавный скролл для iOS */
+}
 /* Мобильное меню */
 .mobile-menu-btn {
     display: none;
@@ -65,19 +110,77 @@
         display: inline;
     }
 }
-    </style>
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.nav-links li {
+    position: relative;
+}
+
+.nav-links li a {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.badge2 {
+    position: absolute;
+    top: 45px;
+    right: 165px;
+    background-color: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    line-height: 1;
+}
+@media (max-width: 768px) {
+    .badge{
+        top: 0px;
+        right: 140px;
+    }
+}
+</style>
 </head>
 <body>
-    <?php require_once __DIR__ . '/auth.php';?>
+    <?php require_once __DIR__ . '/auth.php';
+    require_once 'includes/functions.php';
+
+    $user = getCurrentUser($db);
+    
+    // Получаем количество непрочитанных сообщений
+if (isLoggedIn()) {
+    $unreadMessagesCount = $db->querySingle("
+        SELECT COUNT(*) 
+        FROM messages 
+        WHERE receiver_id = {$user['id']} AND is_read = 0
+    ");
+    $_SESSION['unread_messages'] = $unreadMessagesCount;
+}
+    
+    
+    ?>
     <!-- Header/Navbar -->
     <header>
         <div class="navbar">
             <button class="mobile-menu-btn" id="mobileMenuBtn">
                 <i class="fas fa-bars"></i>
+                <?php if (isLoggedIn() && $_SESSION['unread_messages'] > 0): ?>
+                    <span class="badge2"><?= $_SESSION['unread_messages'] ?></span>
+                <?php endif; ?>
             </button>
             
             <div class="logo">
-                <i class="fas fa-users"></i>
+                <!--<i class="fas fa-users"></i> -->
+                <i><img src = 'icon-192x192.png' width = '50px'></i>
                 <a href="/">ConnectMe</a>
             </div>
 
@@ -113,6 +216,9 @@
                 <li>
                     <a href="/messages.php">
                         <i class="fas fa-comments"></i>
+                        <?php if (isLoggedIn() && $_SESSION['unread_messages'] > 0): ?>
+                            <span class="badge"><?= $_SESSION['unread_messages'] ?></span>
+                        <?php endif; ?>
                         <span>Сообщения</span>
                     </a>
                 </li>

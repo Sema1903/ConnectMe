@@ -16,10 +16,10 @@ if (!empty($search_query)) {
     
     // Поиск пользователей (по имени и ID)
     $stmt = $db->prepare("SELECT id, full_name, avatar FROM users 
-                         WHERE full_name LIKE :query OR id = :id
+                         WHERE full_name LIKE :query OR username LIKE :username
                          LIMIT 10");
     $stmt->bindValue(':query', "%$search_query%", SQLITE3_TEXT);
-    $stmt->bindValue(':id', is_numeric($search_query) ? (int)$search_query : 0, SQLITE3_INTEGER);
+    $stmt->bindValue(':username', "%$search_query%", SQLITE3_TEXT);
     $result = $stmt->execute();
     
     while ($row = $result->fetchArray(SQLITE3_ASSOC)) {

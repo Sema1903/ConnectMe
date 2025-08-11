@@ -1139,7 +1139,6 @@ if ($profile_user) {
             var(--bg);
         font-family: 'Bangers', cursive;
     }
-    
     .profile-style-marvel .profile-header {
         background: var(--card);
         border: 5px solid var(--primary);
@@ -1167,7 +1166,10 @@ if ($profile_user) {
             var(--bg);
         font-family: 'Press Start 2P', cursive;
     }
-    
+    .profile-style-cyber .comment{
+        background: var(--card);
+        border: 1px solid var(--primary);
+    }
     .profile-style-cyber .profile-header {
         background: var(--card);
         border: 1px solid var(--primary);
@@ -1614,7 +1616,11 @@ if ($profile_user) {
     background-size: cover;
     font-family: 'Courier New', monospace;
 }
-
+.profile-style-khakas .comment{
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+    background: var(--card-bg);
+}
 .profile-style-khakas .profile-header {
     border: 1px solid var(--primary-color);
     box-shadow: 0 0 10px var(--primary-color);
@@ -1697,7 +1703,11 @@ if ($profile_user) {
             border-bottom: 5px solid var(--primary);
         }
     }
-    
+    .profile-style-marvel .comment{
+        background: var(--card);
+        border: 5px solid var(--primary);
+        box-shadow: 0 0 0 5px var(--secondary);
+    }
     /* 8. Киберпанк - адаптивные модификации */
     .profile-style-cyber {
         --primary: #0ff;
@@ -1709,7 +1719,6 @@ if ($profile_user) {
             background-size: 5px 5px;
         }
     }
-    
     /* 9. Спорт - адаптивные модификации */
     .profile-style-sport {
         --primary: #ff6600;
@@ -2332,6 +2341,10 @@ if ($profile_user) {
     border: 1px solid var(--secondary-color);
     font-family: 'Russo One', sans-serif;
 }
+.profile-style-got .comment{
+    box-shadow: 0 0 15px rgba(0, 48, 143, 0.5);
+    background: var(--card-bg);
+}
 .crypto-wallet-btn {
     position: fixed;
     bottom: 20px;
@@ -2475,7 +2488,11 @@ if ($profile_user) {
         var(--bg-color);
     font-family: 'Montserrat', sans-serif;
 }
-
+.profile-style-vip .comment{
+    border: 2px solid var(--primary-color);
+    background: var(--card-bg);
+    box-shadow: 0 0 30px var(--primary-color);
+}
 .profile-style-vip .profile-header {
     border: 2px solid var(--primary-color);
     background: var(--card-bg);

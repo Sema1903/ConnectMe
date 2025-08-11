@@ -650,6 +650,46 @@ require_once 'includes/header.php';
         object-fit: cover;
         transition: transform 0.2s;
     }
+    
+    
+    
+    
+    .post-form {
+        width: 100%;
+        overflow: hidden;
+    }
+    
+    .post-form textarea {
+        width: calc(100% - 20px); /* учитываем padding */
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .post-actions {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .post-actions input[type="file"] {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .post-submit-btn {
+        width: 100%;
+        padding: 10px;
+    }
+    
+    .create-post-card {
+        padding: 12px;
+        flex-direction: column;
+    }
+    
+    .post-author {
+        margin-bottom: 10px;
+    }
 
 }
 

@@ -408,7 +408,7 @@ function getLiveStreams($db) {
 
 
                         function getUserByUsername($db, $username) {
-                            $stmt = $db->prepare("SELECT id, username, full_name, avatar FROM users WHERE username = ?");
+                            $stmt = $db->prepare("SELECT * FROM users WHERE username = ?");
                             $stmt->bindValue(1, $username, SQLITE3_TEXT);
                             $result = $stmt->execute();
                             return $result->fetchArray(SQLITE3_ASSOC);
