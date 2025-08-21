@@ -98,8 +98,52 @@ require_once 'includes/header.php';
                         <img src="assets/images/avatars/<?= $user['avatar'] ?>" alt="User" class="post-author-avatar">
                         <input type="text" name="content" placeholder="Что у вас нового, <?= explode(' ', $user['full_name'])[0] ?>?" class="post-input-field" required>
                     </div>
+
+
+
+
+                    <div class="poll-creation" id="poll-creation" style="display: none;">
+                        <input type="hidden" name="has_poll" value="0">
+                        <div class="form-group">
+                            <input type="text" name="poll_question" class="form-control" placeholder="Вопрос опроса">
+                        </div>
+                        
+                        <div id="poll-options-container">
+                            <div class="poll-option">
+                                <input type="text" name="poll_options[]" class="form-control" placeholder="Вариант ответа 1">
+                            </div>
+                            <div class="poll-option">
+                                <input type="text" name="poll_options[]" class="form-control" placeholder="Вариант ответа 2">
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="add-poll-option" class="btn">+ Добавить вариант</button>
+                        
+                        <div class="poll-settings" style='display:none;'>
+                            <label>
+                                <input type="checkbox" name="poll_multiple"> Разрешить несколько вариантов
+                            </label>
+                            <label>
+                                <input type="checkbox" id="poll-has-deadline" name="poll_has_deadline">
+                                <span>Установить срок завершения</span>
+                                <input type="datetime-local" name="poll_deadline" style="display: none;">
+                            </label>
+                        </div>
+                    </div>
+
+
+
+
+
                     <!-- В блоке create-post замените кнопку feeling-action на это: -->
                     <div class="post-actions">
+
+
+
+                    <button type="button" id="toggle-poll" class="post-action">
+                        <i class="fas fa-poll"></i> Опрос
+                    </button>
+
                         <label class="post-action photo-action">
                             <i class="fas fa-images"></i>
                             <span class="action-text">Фото/Видео</span>
@@ -160,7 +204,7 @@ require_once 'includes/header.php';
                     
                     <div class="post-content">
                         <p class="post-text"><?= processMentions(nl2br(htmlspecialchars($post['content'])), $db) ?></p>
-                        <?php if ($post['feeling']): ?>
+                        <?php if ($post['feeling']):?>
                             <div class="post-feeling">
                                 <?php 
                                     $feeling_icons = [
@@ -184,6 +228,66 @@ require_once 'includes/header.php';
                                 <span><?= $feeling_texts[$post['feeling']] ?></span>
                             </div>
                         <?php endif; ?>
+
+
+
+                        <?php if (isset($post['poll'])): ?>
+                            
+                            <div class="poll-container" style="margin-top: 15px; border: 1px solid #ddd; border-radius: 8px; padding: 15px;">
+                                <h4 style="margin-top: 0; margin-bottom: 15px;"><?= htmlspecialchars($post['poll']['question']) ?></h4>
+                                
+                                <?php if ($post['poll']['ends_at'] && strtotime($post['poll']['ends_at']) > time()): ?>
+                                    <div class="poll-deadline" style="font-size: 0.8em; color: #666; margin-bottom: 10px;">
+                                        Опрос активен до: <?= date('d.m.Y H:i', strtotime($post['poll']['ends_at'])) ?>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <div class="poll-options">
+                                    <?php foreach ($post['poll']['options'] as $option): ?>
+                                        <div class="poll-option" style="margin-bottom: 10px;">
+                                            <?php if (isset($user) && (hasUserVoted($db, $post['poll']['id'], $user['id']) || 
+                                                    ($post['poll']['ends_at'] && strtotime($post['poll']['ends_at']) < time()))): ?>
+                                                <!-- Показываем результаты -->
+                                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                                    <span><?= htmlspecialchars($option['option_text']) ?></span>
+                                                    <span><?= $option['votes'] ?> (<?= round($option['votes'] / max(1, $post['poll']['total_votes']) * 100) ?>%)</span>
+                                                </div>
+                                                <div style="height: 10px; background: #f0f0f0; border-radius: 5px;">
+                                                    <div style="height: 100%; width: <?= round($option['votes'] / max(1, $post['poll']['total_votes']) * 100) ?>%; 
+                                                        background: var(--primary-color); border-radius: 5px;"></div>
+                                                </div>
+                                            <?php else: ?>
+                                                <!-- Показываем варианты для голосования -->
+                                                <label style="display: flex; align-items: center;">
+                                                    <input type="<?= $post['poll']['is_multiple'] ? 'checkbox' : 'radio' ?>" 
+                                                        name="poll_option_<?= $post['poll']['id'] ?>" 
+                                                        value="<?= $option['id'] ?>" 
+                                                        style="margin-right: 10px;">
+                                                    <?= htmlspecialchars($option['option_text']) ?>
+                                                </label>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                
+                                <div class="poll-total" style="font-size: 0.8em; color: #666; margin-top: 10px;">
+                                    Всего голосов: <?= $post['poll']['total_votes'] ?>
+                                </div>
+                                
+                                <?php if (isset($user) && (!hasUserVoted($db, $post['poll']['id'], $user['id']) && 
+                                        (!$post['poll']['ends_at'] || strtotime($post['poll']['ends_at']) > time()))): ?>
+                                    <button class="vote-btn" data-poll-id="<?= $post['poll']['id'] ?>" 
+                                            style="margin-top: 10px; padding: 5px 15px; background: var(--primary-color); 
+                                                color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                        Голосовать
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+
+
+
+
                         <?php if ($post['image']): ?>
                             <img src="/assets/images/posts/<?= $post['image'] ?>" alt="Post Image" class="post-image">
                         <?php endif; ?>
@@ -1013,6 +1117,122 @@ document.addEventListener('DOMContentLoaded', function() {
     // Инициализация обработчиков при первой загрузке
     initPostHandlers();
 });
+
+
+
+
+
+
+
+document.getElementById('toggle-poll').addEventListener('click', function() {
+    const pollCreation = document.getElementById('poll-creation');
+    const hasPollInput = pollCreation.querySelector('input[name="has_poll"]');
+    
+    if (pollCreation.style.display === 'none') {
+        pollCreation.style.display = 'block';
+        hasPollInput.value = '1';
+        this.classList.add('active');
+    } else {
+        pollCreation.style.display = 'none';
+        hasPollInput.value = '0';
+        this.classList.remove('active');
+    }
+});
+
+document.getElementById('add-poll-option').addEventListener('click', function() {
+    const optionsContainer = document.getElementById('poll-options-container');
+    const optionCount = optionsContainer.querySelectorAll('.poll-option').length + 1;
+    
+    const optionDiv = document.createElement('div');
+    optionDiv.className = 'poll-option';
+    optionDiv.innerHTML = `
+        <input type="text" name="poll_options[]" class="form-control" placeholder="Вариант ответа ${optionCount}">
+        <button type="button" class="remove-option-btn"><i class="fas fa-times"></i></button>
+    `;
+    
+    optionsContainer.appendChild(optionDiv);
+    
+    // Обработчик для кнопки удаления
+    optionDiv.querySelector('.remove-option-btn').addEventListener('click', function() {
+        if (optionsContainer.querySelectorAll('.poll-option').length > 2) {
+            optionsContainer.removeChild(optionDiv);
+        } else {
+            alert('Опрос должен содержать минимум 2 варианта');
+        }
+    });
+});
+document.getElementById('poll-has-deadline').addEventListener('change', function() {
+    const deadlineInput = document.querySelector('input[name="poll_deadline"]');
+    deadlineInput.style.display = this.checked ? 'inline-block' : 'none';
+    
+    if (this.checked) {
+        const now = new Date();
+        now.setHours(now.getHours() + 1);
+        deadlineInput.min = now.toISOString().slice(0, 16);
+        deadlineInput.value = now.toISOString().slice(0, 16);
+    }
+});
+
+// Модифицируем обработчик формы
+document.getElementById('create-post-form').addEventListener('submit', function(e) {
+    const pollQuestion = document.querySelector('input[name="poll_question"]').value;
+    const pollOptions = Array.from(document.querySelectorAll('input[name="poll_options[]"]'))
+        .map(input => input.value.trim())
+        .filter(text => text !== '');
+    
+    const hasPoll = document.querySelector('input[name="has_poll"]').value === '1';
+    
+    if (hasPoll && (!pollQuestion || pollOptions.length < 2)) {
+        e.preventDefault();
+        alert('Для создания опроса укажите вопрос и минимум 2 варианта ответа');
+        return;
+    }
+});
+// Обработчик голосования
+document.addEventListener('click', async function(e) {
+    if (e.target.classList.contains('vote-btn')) {
+        const pollId = e.target.getAttribute('data-poll-id');
+        const selectedOptions = document.querySelectorAll(
+            `input[name="poll_option_${pollId}"]:checked`
+        );
+        
+        if (selectedOptions.length === 0) {
+            alert('Пожалуйста, выберите вариант ответа');
+            return;
+        }
+        
+        const optionIds = Array.from(selectedOptions).map(opt => parseInt(opt.value));
+        
+        try {
+            const response = await fetch('/actions/vote.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    poll_id: parseInt(pollId),
+                    option_ids: optionIds
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Ошибка сервера');
+            }
+            
+            if (data.success) {
+                // Перезагружаем страницу для обновления результатов
+                location.reload();
+            } else {
+                alert(data.message || 'Ошибка при голосовании');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка: ' + error.message);
+        }
+    }
+});
 </script>
 
 <style>
@@ -1064,6 +1284,91 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .post-card.blessed {
     border-color: #9370DB; /* Фиолетовый для благословения */
+}
+
+
+
+
+
+
+
+.poll-container {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.poll-question {
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.poll-option {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    background: white;
+}
+
+.poll-option:hover {
+    background: #f0f2f5;
+}
+
+.poll-total {
+    font-size: 0.8em;
+    color: #65676b;
+    margin-top: 10px;
+}
+
+.vote-btn {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.vote-btn:hover {
+    background: #357ae8;
+}
+
+.poll-results {
+    margin-top: 15px;
+}
+
+.poll-result-bar {
+    height: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+.poll-result-fill {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 5px;
+}
+#toggle-poll.active {
+    background-color: #e6f0ff;
+    color: var(--primary-color);
+}
+
+.poll-option {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.remove-option-btn {
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #ff4444;
+    cursor: pointer;
 }
 </style>
 <?php require_once 'includes/footer.php'; ?>

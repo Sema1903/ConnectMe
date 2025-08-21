@@ -236,8 +236,8 @@ if (isLoggedIn()) {
                 </li>
                 <li>
                     <a href="/games.php">
-                        <i class="fas fa-space-shuttle"></i>
-                        <span>Аркада</span>
+                        <i class="fas fa-server"></i>
+                        <span>Миниприложения</span>
                     </a>
                 </li>
                 <li>

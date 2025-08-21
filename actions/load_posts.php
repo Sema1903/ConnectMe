@@ -48,6 +48,61 @@ foreach ($posts as $post): ?>
                     <span><?= $feeling_texts[$post['feeling']] ?></span>
                 </div>
             <?php endif; ?>
+
+
+
+            <?php if (isset($post['poll'])): ?>
+                            <div class="poll-container" style="margin-top: 15px; border: 1px solid #ddd; border-radius: 8px; padding: 15px;">
+                                <h4 style="margin-top: 0; margin-bottom: 15px;"><?= htmlspecialchars($post['poll']['question']) ?></h4>
+                                
+                                <?php if ($post['poll']['ends_at'] && strtotime($post['poll']['ends_at']) > time()): ?>
+                                    <div class="poll-deadline" style="font-size: 0.8em; color: #666; margin-bottom: 10px;">
+                                        Опрос активен до: <?= date('d.m.Y H:i', strtotime($post['poll']['ends_at'])) ?>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <div class="poll-options">
+                                    <?php foreach ($post['poll']['options'] as $option): ?>
+                                        <div class="poll-option" style="margin-bottom: 10px;">
+                                            <?php if (isset($user) && (hasUserVoted($db, $post['poll']['id'], $user['id']) || 
+                                                    ($post['poll']['ends_at'] && strtotime($post['poll']['ends_at']) < time()))): ?>
+                                                <!-- Показываем результаты -->
+                                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                                    <span><?= htmlspecialchars($option['option_text']) ?></span>
+                                                    <span><?= $option['votes'] ?> (<?= round($option['votes'] / max(1, $post['poll']['total_votes']) * 100) ?>%)</span>
+                                                </div>
+                                                <div style="height: 10px; background: #f0f0f0; border-radius: 5px;">
+                                                    <div style="height: 100%; width: <?= round($option['votes'] / max(1, $post['poll']['total_votes']) * 100) ?>%; 
+                                                        background: var(--primary-color); border-radius: 5px;"></div>
+                                                </div>
+                                            <?php else: ?>
+                                                <!-- Показываем варианты для голосования -->
+                                                <label style="display: flex; align-items: center;">
+                                                    <input type="<?= $post['poll']['is_multiple'] ? 'checkbox' : 'radio' ?>" 
+                                                        name="poll_option_<?= $post['poll']['id'] ?>" 
+                                                        value="<?= $option['id'] ?>" 
+                                                        style="margin-right: 10px;">
+                                                    <?= htmlspecialchars($option['option_text']) ?>
+                                                </label>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                
+                                <div class="poll-total" style="font-size: 0.8em; color: #666; margin-top: 10px;">
+                                    Всего голосов: <?= $post['poll']['total_votes'] ?>
+                                </div>
+                                
+                                <?php if (isset($user) && (!hasUserVoted($db, $post['poll']['id'], $user['id']) && 
+                                        (!$post['poll']['ends_at'] || strtotime($post['poll']['ends_at']) > time()))): ?>
+                                    <button class="vote-btn" data-poll-id="<?= $post['poll']['id'] ?>" 
+                                            style="margin-top: 10px; padding: 5px 15px; background: var(--primary-color); 
+                                                color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                        Голосовать
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
             <?php if ($post['image']): ?>
                 <img src="/assets/images/posts/<?= $post['image'] ?>" alt="Post Image" class="post-image">
             <?php endif; ?>

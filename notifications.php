@@ -311,6 +311,9 @@ require_once 'includes/header.php';
                                         <?php case 'friend_request_accepted': ?>
                                             Принял ваш запрос в друзья
                                             <?php break; ?>
+                                        <?php case 'challenge':?>
+                                            Бросил Вам вызов
+                                            <?php break;?>
                                         <?php case 'mention': ?>
                                             Упоминает вас в посте:
                                             <?php if (!empty($notif['post_content'])): ?>

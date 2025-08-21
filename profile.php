@@ -2512,6 +2512,40 @@ if ($profile_user) {
     font-weight: bold;
     text-transform: uppercase;
 }
+.profile-actions{
+    height: 90px;
+    width: 170px;
+}
+.post-card {
+    /* Существующие стили */
+    border: 2px solid transparent; /* Добавляем прозрачную границу */
+    transition: border-color 0.3s ease;
+}
+
+.post-card.happy {
+    border-color: #FFD700; /* Желтый для счастья */
+}
+
+.post-card.sad {
+    border-color: #87CEEB; /* Голубой для грусти */
+}
+
+.post-card.angry {
+    border-color: #FF4500; /* Оранжево-красный для злости */
+}
+
+.post-card.loved {
+    border-color: #FF69B4; /* Розовый для влюбленности */
+}
+
+.post-card.tired {
+    border-color: #A9A9A9; /* Серый для усталости */
+}
+
+.post-card.blessed {
+    border-color: #9370DB; /* Фиолетовый для благословения */
+}
+
 </style>
 
 <div class="profile-container profile-style-<?= $profile_style ?>">
@@ -2728,6 +2762,95 @@ if ($profile_user) {
                              class="post-image"
                              onclick="openImageModal('/assets/images/posts/<?= $post['image'] ?>')">
                         <?php endif; ?>
+
+
+
+
+
+
+                        <?php if ($post['feeling']):?>
+                            <div class="post-feeling">
+                                <?php 
+                                    $feeling_icons = [
+                                        'happy' => 'fa-smile-beam',
+                                        'sad' => 'fa-sad-tear',
+                                        'angry' => 'fa-angry',
+                                        'loved' => 'fa-heart',
+                                        'tired' => 'fa-tired',
+                                        'blessed' => 'fa-pray'
+                                    ];
+                                    $feeling_texts = [
+                                        'happy' => 'чувствует себя счастливым',
+                                        'sad' => 'чувствует себя грустным',
+                                        'angry' => 'чувствует себя злым',
+                                        'loved' => 'чувствует себя влюблённым',
+                                        'tired' => 'чувствует себя уставшим',
+                                        'blessed' => 'чувствует себя благословлённым'
+                                    ];
+                                ?>
+                                <i class="fas <?= $feeling_icons[$post['feeling']] ?>"></i>
+                                <span><?= $feeling_texts[$post['feeling']] ?></span>
+                            </div>
+                        <?php endif; ?>
+
+
+
+                        <?php if (isset($post['poll'])): ?>
+                            <div class="poll-container" style="margin-top: 15px; border: 1px solid #ddd; border-radius: 8px; padding: 15px;">
+                                <h4 style="margin-top: 0; margin-bottom: 15px;"><?= htmlspecialchars($post['poll']['question']) ?></h4>
+                                
+                                <?php if ($post['poll']['ends_at'] && strtotime($post['poll']['ends_at']) > time()): ?>
+                                    <div class="poll-deadline" style="font-size: 0.8em; color: #666; margin-bottom: 10px;">
+                                        Опрос активен до: <?= date('d.m.Y H:i', strtotime($post['poll']['ends_at'])) ?>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <div class="poll-options">
+                                    <?php foreach ($post['poll']['options'] as $option): ?>
+                                        <div class="poll-option" style="margin-bottom: 10px;">
+                                            <?php if (hasUserVoted($db, $post['poll']['id'], $user['id']) || 
+                                                    ($post['poll']['ends_at'] && strtotime($post['poll']['ends_at']) < time())): ?>
+                                                <!-- Показываем результаты -->
+                                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                                    <span><?= htmlspecialchars($option['option_text']) ?></span>
+                                                    <span><?= $option['votes'] ?> (<?= round($option['votes'] / max(1, $post['poll']['total_votes']) * 100) ?>%)</span>
+                                                </div>
+                                                <div style="height: 10px; background: #f0f0f0; border-radius: 5px;">
+                                                    <div style="height: 100%; width: <?= round($option['votes'] / max(1, $post['poll']['total_votes']) * 100) ?>%; 
+                                                        background: var(--primary-color); border-radius: 5px;"></div>
+                                                </div>
+                                            <?php else: ?>
+                                                <!-- Показываем варианты для голосования -->
+                                                <label style="display: flex; align-items: center;">
+                                                    <input type="<?= $post['poll']['is_multiple'] ? 'checkbox' : 'radio' ?>" 
+                                                        name="poll_option_<?= $post['poll']['id'] ?>" 
+                                                        value="<?= $option['id'] ?>" 
+                                                        style="margin-right: 10px;">
+                                                    <?= htmlspecialchars($option['option_text']) ?>
+                                                </label>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                
+                                <div class="poll-total" style="font-size: 0.8em; color: #666; margin-top: 10px;">
+                                    Всего голосов: <?= $post['poll']['total_votes'] ?>
+                                </div>
+                                
+                                <?php if (!hasUserVoted($db, $post['poll']['id'], $user['id']) && 
+                                        (!$post['poll']['ends_at'] || strtotime($post['poll']['ends_at']) > time())): ?>
+                                    <button class="vote-btn" data-poll-id="<?= $post['poll']['id'] ?>" 
+                                            style="margin-top: 10px; padding: 5px 15px; background: var(--primary-color); 
+                                                color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                        Голосовать
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+
+
+                       
+
                     </div>
                     
                     <div class="post-stats">
@@ -3250,7 +3373,6 @@ async function sendCurrency(event) {
         if (!response.ok || !result.success) {
             throw new Error(result.message || "Ошибка перевода");
         }
-
         // Успех
         showCryptoAlert('success', `Успешно отправлено ${amount.toFixed(2)} CC`);
         closeSendPopup();
@@ -3265,6 +3387,7 @@ async function sendCurrency(event) {
             event.target.querySelector('button[type="submit"]').disabled = false;
         }
     }
+    location.reload(true);
 }
 
 function updateBalance() {
@@ -3400,6 +3523,68 @@ function sha256(str) {
     }
     return hash.toString(16);
 }
+
+
+
+
+
+
+// Обработчик голосования
+document.addEventListener('click', async function(e) {
+    if (e.target.classList.contains('vote-btn')) {
+        const pollId = e.target.getAttribute('data-poll-id');
+        const selectedOptions = document.querySelectorAll(
+            `input[name="poll_option_${pollId}"]:checked`
+        );
+        
+        if (selectedOptions.length === 0) {
+            alert('Пожалуйста, выберите вариант ответа');
+            return;
+        }
+        
+        const optionIds = Array.from(selectedOptions).map(opt => parseInt(opt.value));
+        
+        try {
+            const response = await fetch('/actions/vote.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    poll_id: parseInt(pollId),
+                    option_ids: optionIds
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Ошибка сервера');
+            }
+            
+            if (data.success) {
+                // Перезагружаем страницу для обновления результатов
+                location.reload();
+            } else {
+                alert(data.message || 'Ошибка при голосовании');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка: ' + error.message);
+        }
+    }
+});
+document.getElementById('poll-has-deadline').addEventListener('change', function() {
+    const deadlineInput = document.querySelector('input[name="poll_deadline"]');
+    deadlineInput.style.display = this.checked ? 'inline-block' : 'none';
+    
+    if (this.checked) {
+        const now = new Date();
+        now.setHours(now.getHours() + 1);
+        deadlineInput.min = now.toISOString().slice(0, 16);
+        deadlineInput.value = now.toISOString().slice(0, 16);
+    }
+});
 </script>
 
 <?php require_once 'includes/footer.php'; ?>

@@ -156,17 +156,15 @@ function likePost($db, $user_id, $post_id) {
 }
 
 function addComment($db, $post_id, $user_id, $content) {
-    $stmt = $db->prepare("INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)");
-    $stmt->bindValue(1, $post_id, SQLITE3_INTEGER);
-    $stmt->bindValue(2, $user_id, SQLITE3_INTEGER);
-    $stmt->bindValue(3, $content, SQLITE3_TEXT);
     $dop = $db -> prepare('SELECT * FROM posts WHERE id = :id');
     $dop -> bindValue(':id', $post_id, SQLITE3_INTEGER);
     $records = $dop -> execute() -> fetchArray(SQLITE3_ASSOC);
     $post_author = $records['user_id'];
-    if($post_author != $user_id){
-        rewardForAction($db, $post_author, 'comment');
-    }
+    rewardForAction($db, $post_author, 'comment');
+    $stmt = $db->prepare("INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)");
+    $stmt->bindValue(1, $post_id, SQLITE3_INTEGER);
+    $stmt->bindValue(2, $user_id, SQLITE3_INTEGER);
+    $stmt->bindValue(3, $content, SQLITE3_TEXT);
     return $stmt->execute();
 }
 
@@ -208,26 +206,51 @@ function getLiveStreams($db) {
 }
                          // Добавляем в конец файла functions.php
 
-                         function getPostsByUser($db, $user_id) {
-                             $stmt = $db->prepare("
-                                 SELECT p.*, u.username, u.full_name, u.avatar,
-                                        (SELECT COUNT(*) FROM likes WHERE post_id = p.id) as likes_count,
-                                        (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count
-                                 FROM posts p
-                                 JOIN users u ON p.user_id = u.id
-                                 WHERE p.user_id = ?
-                                 ORDER BY p.created_at DESC
-                             ");
-                             $stmt->bindValue(1, $user_id, SQLITE3_INTEGER);
-                             $result = $stmt->execute();
-                             
-                             $posts = [];
-                             while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-                                 $posts[] = $row;
-                             }
-                             
-                             return $posts;
-                         }
+                         function getPostsByUser($db, $user_id, $current_user_id = null) {
+                            $query = "
+                                SELECT p.*, u.username, u.full_name, u.avatar,
+                                       (SELECT COUNT(*) FROM likes WHERE post_id = p.id) as likes_count,
+                                       (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count";
+                            
+                            // Добавляем информацию о том, лайкнул ли текущий пользователь пост
+                            if ($current_user_id) {
+                                $query .= ", EXISTS(SELECT 1 FROM likes WHERE post_id = p.id AND user_id = $current_user_id) as is_liked";
+                            } else {
+                                $query .= ", 0 as is_liked";
+                            }
+                            
+                            $query .= " FROM posts p
+                                       JOIN users u ON p.user_id = u.id
+                                       WHERE p.user_id = ?
+                                       ORDER BY p.created_at DESC";
+                            
+                            $stmt = $db->prepare($query);
+                            $stmt->bindValue(1, $user_id, SQLITE3_INTEGER);
+                            $result = $stmt->execute();
+                            
+                            $posts = [];
+                            while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+                                // Обрабатываем упоминания в тексте
+                                $row['content'] = processMentions(nl2br(htmlspecialchars($row['content'])), $db);
+                                
+                                // Загружаем опрос, если он есть
+                                $poll = getPollByPostId($db, $row['id']);
+                                if ($poll) {
+                                    $row['poll'] = $poll;
+                                    
+                                    // Проверяем, голосовал ли текущий пользователь
+                                    if ($current_user_id) {
+                                        $row['poll']['has_voted'] = hasUserVoted($db, $poll['id'], $current_user_id);
+                                    } else {
+                                        $row['poll']['has_voted'] = false;
+                                    }
+                                }
+                                
+                                $posts[] = $row;
+                            }
+                            
+                            return $posts;
+                        }
                          function getRecentMessages($db, $user_id) {
                             $stmt = $db->prepare("
                                 SELECT m.*, 
@@ -461,6 +484,13 @@ function getLiveStreams($db) {
                             $posts = [];
                             while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
                                 $row['content'] = processMentions(nl2br(htmlspecialchars($row['content'])), $db);
+                                
+                                // Загружаем опрос, если он есть
+                                $poll = getPollByPostId($db, $row['id']);
+                                if ($poll) {
+                                    $row['poll'] = $poll;
+                                }
+                                
                                 $posts[] = $row;
                             }
                             
@@ -523,4 +553,108 @@ function rewardForAction($db, $user_id, $action_type) {
         return addCurrency($db, $user_id, $rewards[$action_type], "Награда за $action_type");
     }
     return false;
+}
+
+
+
+
+
+
+
+function createPoll($db, $post_id, $question, $options, $is_multiple = false, $ends_at = null) {
+    // Создаем опрос
+    $stmt = $db->prepare("INSERT INTO polls (post_id, question, is_multiple, ends_at) VALUES (?, ?, ?, ?)");
+    $stmt->bindValue(1, $post_id, SQLITE3_INTEGER);
+    $stmt->bindValue(2, $question, SQLITE3_TEXT);
+    $stmt->bindValue(3, $is_multiple ? 1 : 0, SQLITE3_INTEGER);
+    $stmt->bindValue(4, $ends_at, SQLITE3_TEXT);
+    $stmt->execute();
+    
+    $poll_id = $db->lastInsertRowID();
+    
+    // Добавляем варианты ответов
+    foreach ($options as $option_text) {
+        $option_text = trim($option_text);
+        if (!empty($option_text)) {
+            $stmt = $db->prepare("INSERT INTO poll_options (poll_id, option_text) VALUES (?, ?)");
+            $stmt->bindValue(1, $poll_id, SQLITE3_INTEGER);
+            $stmt->bindValue(2, $option_text, SQLITE3_TEXT);
+            $stmt->execute();
+        }
+    }
+    
+    return $poll_id;
+}
+
+function getPollByPostId($db, $post_id) {
+    $stmt = $db->prepare("
+        SELECT p.*, 
+               (SELECT COUNT(*) FROM poll_votes pv WHERE pv.poll_id = p.id) as total_votes
+        FROM polls p
+        WHERE p.post_id = ?
+    ");
+    $stmt->bindValue(1, $post_id, SQLITE3_INTEGER);
+    $result = $stmt->execute();
+    $poll = $result->fetchArray(SQLITE3_ASSOC);
+    
+    if ($poll) {
+        // Получаем варианты ответов
+        $stmt = $db->prepare("
+            SELECT o.*, 
+                   (SELECT COUNT(*) FROM poll_votes pv WHERE pv.option_id = o.id) as votes
+            FROM poll_options o
+            WHERE o.poll_id = ?
+            ORDER BY o.id
+        ");
+        $stmt->bindValue(1, $poll['id'], SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        
+        $options = [];
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $options[] = $row;
+        }
+        
+        $poll['options'] = $options;
+        return $poll;
+    }
+    
+    return null;
+}
+
+function voteInPoll($db, $poll_id, $option_ids, $user_id) {
+    if (empty($option_ids)) return false;
+    
+    $db->exec('BEGIN TRANSACTION');
+    
+    try {
+        // Удаляем предыдущие голоса пользователя
+        $stmt = $db->prepare("DELETE FROM poll_votes WHERE poll_id = ? AND user_id = ?");
+        $stmt->bindValue(1, $poll_id, SQLITE3_INTEGER);
+        $stmt->bindValue(2, $user_id, SQLITE3_INTEGER);
+        $stmt->execute();
+        
+        // Добавляем новые голоса
+        $stmt = $db->prepare("INSERT INTO poll_votes (poll_id, option_id, user_id) VALUES (?, ?, ?)");
+        
+        foreach ($option_ids as $option_id) {
+            $stmt->bindValue(1, $poll_id, SQLITE3_INTEGER);
+            $stmt->bindValue(2, $option_id, SQLITE3_INTEGER);
+            $stmt->bindValue(3, $user_id, SQLITE3_INTEGER);
+            $stmt->execute();
+        }
+        
+        $db->exec('COMMIT');
+        return true;
+    } catch (Exception $e) {
+        $db->exec('ROLLBACK');
+        error_log("Poll vote error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function hasUserVoted($db, $poll_id, $user_id) {
+    $stmt = $db->prepare("SELECT 1 FROM poll_votes WHERE poll_id = ? AND user_id = ? LIMIT 1");
+    $stmt->bindValue(1, $poll_id, SQLITE3_INTEGER);
+    $stmt->bindValue(2, $user_id, SQLITE3_INTEGER);
+    return (bool) $stmt->execute()->fetchArray();
 }

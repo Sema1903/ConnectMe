@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../includes/config.php'; // Должен содержать путь к БД
+require_once '../includes/functions.php';
 header('Content-Type: application/json');
 
 
@@ -44,6 +45,13 @@ try {
         throw new Exception("Failed to insert comment");
     }
     
+
+    $dop = $db -> prepare('SELECT * FROM posts WHERE id = :id');
+    $dop -> bindValue(':id', $postId, SQLITE3_INTEGER);
+    $records = $dop -> execute() -> fetchArray(SQLITE3_ASSOC);
+    $post_author = $records['user_id'];
+    rewardForAction($db, $post_author, 'comment');
+
     // Получаем количество комментариев
     $countResult = $db->querySingle("SELECT COUNT(*) FROM comments WHERE post_id = $postId");
     

@@ -2,14 +2,14 @@
 require_once 'includes/config.php';
 require_once 'includes/functions.php';
 
-$pageTitle = "Игровая зона | ConnectMe";
+$pageTitle = "Мини-приложения";
 include 'includes/header.php';
 
 $currentUser = getCurrentUser($db);
 ?>
 
 <div class="games-container">
-    <h1><i class="fas fa-gamepad"></i> Игровая зона</h1>
+    <h1><i class="fas fa-server"></i> Мини-приложения</h1>
 
 <?php 
 $games = [
@@ -44,13 +44,29 @@ $games = [
         'icon' => 'fas fa-question-circle',
         'color' => 'purple',
         'href' => 'quiz.php'
+    ],
+    [
+        'id' => 'sport',
+        'title' => 'MemeFC',
+        'description' => 'Погрузитесь в мир смешных единоборств',
+        'icon' => '',
+        'color' => 'red',
+        'href' => 'sport.php'
+    ],
+    [
+        'id' => 'ai',
+        'title' => 'Саманта',
+        'description' => 'Твой ИИ-ассистент',
+        'icon' => 'fas fa-female',
+        'color' => 'purple',
+        'href' => 'ai.php'
     ]
 ];
 ?>
 
     <!-- Доступные игры -->
     <div class="game-section">
-        <h2><i class="fas fa-joystick"></i> Выберите игру</h2>
+        <h2> Выберите приложение</h2>
         <div class="games-grid">
             <?php foreach ($games as $game): ?>
                 <div class="game-card game-card-<?= $game['color'] ?>">

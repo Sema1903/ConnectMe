@@ -442,6 +442,9 @@ if (isset($_GET['user_id'])) {
     .message-bubble {
         max-width: 90%;
     }
+    .chat-messages{
+        margin-bottom: 200px;
+    }
 }
 
 /* Для iPhone с "челкой" */

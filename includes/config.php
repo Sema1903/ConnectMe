@@ -191,7 +191,6 @@ try {
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id)
             );
-
             CREATE TABLE IF NOT EXISTS game_items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -202,7 +201,7 @@ try {
                 type TEXT NOT NULL DEFAULT 'regular', -- 'regular', 'premium', 'avatar_frame', 'profile_cover'
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
-                        CREATE TABLE IF NOT EXISTS user_items (
+            CREATE TABLE IF NOT EXISTS user_items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 item_id INTEGER NOT NULL,
@@ -222,6 +221,72 @@ try {
                 FOREIGN KEY (receiver_id) REFERENCES users(id),
                 FOREIGN KEY (item_id) REFERENCES game_items(id)
             );
+            CREATE TABLE IF NOT EXISTS polls (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER NOT NULL,
+                question TEXT NOT NULL,
+                is_multiple INTEGER DEFAULT 0,
+                ends_at DATETIME,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (post_id) REFERENCES posts(id)
+            );
+            
+            CREATE TABLE IF NOT EXISTS poll_options (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                poll_id INTEGER NOT NULL,
+                option_text TEXT NOT NULL,
+                votes INTEGER DEFAULT 0,
+                FOREIGN KEY (poll_id) REFERENCES polls(id)
+            );
+            
+            CREATE TABLE IF NOT EXISTS poll_votes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                poll_id INTEGER NOT NULL,
+                option_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                voted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (poll_id) REFERENCES polls(id),
+                FOREIGN KEY (option_id) REFERENCES poll_options(id),
+                FOREIGN KEY (user_id) REFERENCES users(id),
+                UNIQUE(poll_id, user_id) ON CONFLICT REPLACE
+            );
+CREATE TABLE IF NOT EXISTS challenges (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    challenger_id INTEGER NOT NULL,
+    opponent_id INTEGER NOT NULL,
+    stake_amount INTEGER NOT NULL,
+    winner_id INTEGER,
+    status TEXT NOT NULL DEFAULT 'pending', -- 'pending', 'active', 'completed', 'cancelled'
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    started_at DATETIME,
+    expires_at DATETIME,
+    completed_at DATETIME,
+    FOREIGN KEY (challenger_id) REFERENCES users(id),
+    FOREIGN KEY (opponent_id) REFERENCES users(id),
+    FOREIGN KEY (winner_id) REFERENCES users(id)
+);
+
+-- Challenge bets table
+CREATE TABLE IF NOT EXISTS challenge_bets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    challenge_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    bet_on TEXT NOT NULL, -- 'challenger' or 'opponent'
+    amount INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (challenge_id) REFERENCES challenges(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Add challenge_id to posts table
+--ALTER TABLE posts ADD COLUMN challenge_id INTEGER REFERENCES challenges(id);
+
+
+--ALTER TABLE posts ADD COLUMN challenge_id INTEGER REFERENCES challenges(id);
+--ALTER TABLE posts ADD COLUMN feeling TEXT;
+--ALTER TABLE posts ADD COLUMN updated_at DATETIME;
+
+
 --            INSERT INTO game_items (name, description, icon, price, quantity, type) VALUES
 --('Бронзовое оформление', 'Оформление страницы 3-го уровня', 'square', 10, 10, '3rd lavel'),
 --('Серебряное фофрмление', 'Офоормление страницы 2-го уровня', 'image', 20, 5, '2nd lavel'),
@@ -297,22 +362,6 @@ function initializeDemoData($db) {
         }
     }
     // Добавьте этот код в функцию initializeDemoData($db) после создания других таблиц
-    $items = [
-        ['Золотой аватар', 'Эксклюзивная золотая рамка для аватара', 100, 'user-circle'],
-        ['Неоновый никнейм', 'Ваш никнейм будет светиться неоновым светом', 150, 'font'],
-        ['Дополнительные жизни', '+3 жизни в играх', 200, 'heart'],
-        ['Ускорение прогресса', 'Удваивает получаемый опыт на 1 день', 250, 'bolt'],
-        ['Редкий скин', 'Уникальный внешний вид для вашего персонажа', 300, 'palette']
-    ];
-
-    foreach ($items as $item) {
-        $stmt = $db->prepare("INSERT INTO game_items (name, description, price, icon) VALUES (?, ?, ?, ?)");
-        $stmt->bindValue(1, $item[0], SQLITE3_TEXT);
-        $stmt->bindValue(2, $item[1], SQLITE3_TEXT);
-        $stmt->bindValue(3, $item[2], SQLITE3_INTEGER);
-        $stmt->bindValue(4, $item[3], SQLITE3_TEXT);
-        $stmt->execute();
-    }
 }
 
 //initializeDemoData($db);

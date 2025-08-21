@@ -89,6 +89,12 @@ require_once 'includes/header.php';
                             <i class="fas fa-cog"></i>
                             <span>Управление</span>
                         </a>
+                    <?php else: ?>
+                        <!-- Добавляем кнопку отправки средств -->
+                        <button class="action-btn send-money-btn" onclick="showSendModal(<?= $group['creator_id'] ?>, '<?= htmlspecialchars(getUserNameById($db, $group['creator_id'])) ?>')">
+                            <i class="fas fa-coins"></i>
+                            <span>Отправить средства</span>
+                        </button>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
@@ -158,7 +164,7 @@ require_once 'includes/header.php';
                     </div>
                     <form class="post-form" method="POST" action="/actions/create_group_post.php">
                         <input type="hidden" name="group_id" value="<?= $group['id'] ?>">
-                        <textarea name="content" placeholder="Напишите сообщение для группы..." rows="3"></textarea>
+                        <textarea name="content" placeholder="Напишите сообщение для группы..." rows="3" class="textarea"></textarea>
                         <div class="post-actions">
                             <input type = 'file' name = 'image'>
                             <button type="submit" class="post-submit-btn">Опубликовать</button>
@@ -200,7 +206,7 @@ require_once 'includes/header.php';
                     <?php endforeach; ?>
                 <?php else: ?>
                     <div class="empty-feed">
-                        <img src="/assets/images/empty-group.svg" alt="Нет публикаций">
+                        <i class="fas fa-newspaper"></i>
                         <h3>В группе пока нет публикаций</h3>
                         <?php if ($current_user && $is_member): ?>
                             <p>Будьте первым, кто поделится чем-то в этой группе!</p>
@@ -212,6 +218,34 @@ require_once 'includes/header.php';
             </div>
         </div>
     </div>
+
+
+
+
+
+
+    <!-- Модальное окно для отправки средств -->
+<div id="sendModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSendModal()">&times;</span>
+        <h3 id="modalTitle">Отправить ConnectCoin</h3>
+        <form id="sendCurrencyForm" onsubmit="sendCurrency(event)">
+            <input type="hidden" name="to_user_id" id="sendToUserId">
+            
+            <div class="form-group">
+                <label for="sendAmount">Сумма</label>
+                <input type="number" id="sendAmount" name="amount" step="0.01" min="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="sendMessage">Сообщение (необязательно)</label>
+                <input type="text" id="sendMessage" name="message" placeholder="Назначение платежа">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+    </div>
+</div>
 </main>
 
 <style>
@@ -588,7 +622,6 @@ require_once 'includes/header.php';
 .post-submit-btn:hover {
     background: #166fe5;
 }
-
 /* Лента постов */
 .empty-feed {
     text-align: center;
@@ -619,7 +652,6 @@ require_once 'includes/header.php';
     .group-content {
         flex-direction: column;
     }
-    
     .group-sidebar {
         width: 100%;
     }
@@ -640,7 +672,6 @@ require_once 'includes/header.php';
         margin-left: 0;
         margin-top: 20px;
     }
-    
     .group-title {
         font-size: 1.8rem;
     }
@@ -650,10 +681,6 @@ require_once 'includes/header.php';
         object-fit: cover;
         transition: transform 0.2s;
     }
-    
-    
-    
-    
     .post-form {
         width: 100%;
         overflow: hidden;
@@ -690,7 +717,6 @@ require_once 'includes/header.php';
     .post-author {
         margin-bottom: 10px;
     }
-
 }
 
 @media (max-width: 576px) {
@@ -698,7 +724,6 @@ require_once 'includes/header.php';
         width: 100px;
         height: 100px;
     }
-    
     .group-actions {
         flex-wrap: wrap;
     }
@@ -706,6 +731,30 @@ require_once 'includes/header.php';
     .members-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+.send-money-btn {
+    background: linear-gradient(90deg, #f7931a 0%, #f9b54a 100%);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 140px;
+    height: 50px;
+}
+
+.send-money-btn:hover {
+    background: linear-gradient(90deg, #f9b54a 0%, #f7931a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(247, 147, 26, 0.3);
+}
+.group-header{
+    height: 450px;
 }
 </style>
 
@@ -770,6 +819,81 @@ document.querySelector('.post-form').addEventListener('submit', function(e) {
         alert('Произошла ошибка');
     });
 });
+
+
+
+
+
+
+
+
+// Показываем модальное окно для отправки средств
+function showSendModal(userId, username) {
+    const modal = document.getElementById('sendModal');
+    const modalTitle = document.getElementById('modalTitle');
+    
+    modalTitle.textContent = `Отправить ConnectCoin владельцу группы @${username}`;
+    document.getElementById('sendToUserId').value = userId;
+    
+    modal.style.display = 'block';
+}
+
+// Закрываем модальное окно
+function closeSendModal() {
+    document.getElementById('sendModal').style.display = 'none';
+    document.getElementById('sendCurrencyForm').reset();
+}
+
+// Отправка средств
+function sendCurrency(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const toUserId = formData.get('to_user_id');
+    const amount = parseFloat(formData.get('amount'));
+    const message = formData.get('message') || '';
+    
+    if (!toUserId || isNaN(amount) || amount <= 0) {
+        alert('Пожалуйста, укажите корректную сумму');
+        return;
+    }
+    
+    fetch('/actions/transfer_currency.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            to_user_id: toUserId,
+            amount: amount,
+            message: message
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Средства успешно отправлены!');
+            closeSendModal();
+        } else {
+            alert(data.message || 'Ошибка при отправке средств');
+        }
+        location.reload(true);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Произошла ошибка при отправке');
+        location.reload(true);
+    });
+}
+
+// Закрытие модального окна при клике вне его
+window.onclick = function(event) {
+    const modal = document.getElementById('sendModal');
+    if (event.target == modal) {
+        closeSendModal();
+    }
+}
 </script>
 
 <?php require_once 'includes/footer.php'; ?>
