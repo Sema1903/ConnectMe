@@ -132,7 +132,7 @@ const questions = {
         {
             question: "Какой газ преобладает в составе Солнца?",
             answers: ["Кислород", "Гелий", "Водород", "Азот"],
-            correct: 3
+            correct: 2
         },
         {
             question: "Какой орган человека способен к регенерации?",
@@ -395,7 +395,7 @@ const questions = {
         {
             question: "Какой самый любимый супергерой вселенной Marvel у Семена?",
             answers: ["Железный человек", "Капитан Америка", "Халк", "Ракета"],
-            correct: 3
+            correct: 2
         },
         {
             question: "Какой актёр сыграл Тони Старка в MCU?",
@@ -897,6 +897,9 @@ startQuizBtn.style.display = 'none';
     
     .categories-grid {
         grid-template-columns: 1fr 1fr;
+    }
+    .quiz-container{
+        margin-bottom: 100px;
     }
 }
 </style>

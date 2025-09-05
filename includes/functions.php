@@ -101,7 +101,7 @@ function addPost($db, $user_id, $content, $image = null, $feeling = null) {
     
     if ($result) {
         $post_id = $db->lastInsertRowID();
-        rewardForAction($db, $user_id, 'post');
+        //rewardForAction($db, $user_id, 'post');
         // Обрабатываем упоминания
         preg_match_all('/@([a-zA-Z0-9_]+)/', $content, $matches);
         $mentioned_usernames = array_unique($matches[1]);
@@ -150,7 +150,7 @@ function likePost($db, $user_id, $post_id) {
         $dop -> bindValue(':id', $post_id, SQLITE3_INTEGER);
         $records = $dop -> execute() -> fetchArray(SQLITE3_ASSOC);
         $post_author = $records['user_id'];
-        rewardForAction($db, $post_author, 'like_received');
+        //rewardForAction($db, $post_author, 'like_received');
         return ['success' => true, 'action' => 'like'];
     }
 }
@@ -160,7 +160,7 @@ function addComment($db, $post_id, $user_id, $content) {
     $dop -> bindValue(':id', $post_id, SQLITE3_INTEGER);
     $records = $dop -> execute() -> fetchArray(SQLITE3_ASSOC);
     $post_author = $records['user_id'];
-    rewardForAction($db, $post_author, 'comment');
+    //rewardForAction($db, $post_author, 'comment');
     $stmt = $db->prepare("INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)");
     $stmt->bindValue(1, $post_id, SQLITE3_INTEGER);
     $stmt->bindValue(2, $user_id, SQLITE3_INTEGER);

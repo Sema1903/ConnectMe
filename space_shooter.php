@@ -640,6 +640,9 @@ initGame();
 }
 
 @media (max-width: 768px) {
+    body{
+        margin-bottom: 100px !important;
+    }
     .game-info {
         flex-direction: column;
         gap: 15px;

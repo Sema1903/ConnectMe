@@ -257,6 +257,9 @@ if (isset($_GET['user_id'])) {
     padding: 15px;
     border-top: 1px solid var(--border-color);
     background: var(--card-bg);
+    height: 100px;
+    position: fixed;
+    top: 700px !important;
 }
 
 .chat-form {
@@ -421,13 +424,14 @@ if (isset($_GET['user_id'])) {
         right: 0;
         bottom: 0;
         height: 100vh;
-        margin-top: 140px;
+        margin-top: 70px;
     }
     .chat-input {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
+        top: 600px;
         max-width: 100%;
     }
     
@@ -456,6 +460,226 @@ if (isset($_GET['user_id'])) {
     .chat-messages {
         padding-bottom: calc(80px + env(safe-area-inset-bottom));
     }
+}
+:root {
+    --tg-primary: #182533;
+    --tg-secondary: #17212b;
+    --tg-accent: #2b5278;
+    --tg-message-out: #2b5278;
+    --tg-message-in: #182533;
+    --tg-text-primary: #ffffff;
+    --tg-text-secondary: #8696a8;
+    --tg-border: #1e2c3a;
+    --tg-hover: #1e2c3a;
+    --tg-active: #2b5278;
+}
+
+/* Применяем темную тему */
+@media (prefers-color-scheme: dark) {
+    .messages-container {
+        background: var(--tg-secondary);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .navbar{
+        background: black;
+    }
+    /* Контакты */
+    .contacts-sidebar {
+        background: var(--tg-primary);
+        border-right-color: var(--tg-border);
+    }
+    .mobile-nav-item.active{
+        color: '#0088cc';
+    }
+    .contacts-header {
+        background: var(--tg-primary);
+        border-bottom-color: var(--tg-border);
+    }
+
+    .contacts-search input {
+        background: var(--tg-secondary);
+        border-color: var(--tg-border);
+        color: var(--tg-text-primary);
+    }
+
+    .contacts-search input::placeholder {
+        color: var(--tg-text-secondary);
+    }
+
+    .contact-item {
+        background: var(--tg-primary);
+        border-bottom-color: var(--tg-border);
+    }
+
+    .contact-item:hover {
+        background: var(--tg-hover);
+    }
+
+    .contact-item.active {
+        background: var(--tg-active);
+    }
+
+    .contact-name {
+        color: var(--tg-text-primary);
+    }
+
+    .contact-preview {
+        color: var(--tg-text-secondary);
+    }
+
+    .contact-time {
+        color: var(--tg-text-secondary);
+    }
+
+    /* Чат */
+    .chat-container {
+        background: var(--tg-secondary);
+    }
+
+    .chat-header {
+        background: var(--tg-primary);
+        border-bottom-color: var(--tg-border);
+    }
+
+    .chat-messages {
+        background: var(--tg-secondary);
+        background-image: none;
+    }
+
+    .message-outgoing .message-bubble {
+        background: var(--tg-message-out);
+        color: var(--tg-text-primary);
+        border-bottom-right-radius: 4px;
+    }
+
+    .message-incoming .message-bubble {
+        background: var(--tg-message-in);
+        color: var(--tg-text-primary);
+        border: 1px solid var(--tg-border);
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    .message-time {
+        color: var(--tg-text-secondary);
+    }
+
+    .chat-input {
+        background: var(--tg-primary);
+        border-top-color: var(--tg-border);
+    }
+
+    .chat-form input {
+        background: var(--tg-secondary);
+        border-color: var(--tg-border);
+        color: var(--tg-text-primary);
+    }
+
+    .chat-form input::placeholder {
+        color: var(--tg-text-secondary);
+    }
+
+    .send-icon {
+        color: var(--tg-accent);
+    }
+
+    /* Пустой чат */
+    .empty-chat {
+        color: var(--tg-text-secondary);
+        background: var(--tg-secondary);
+    }
+
+    .empty-chat h2 {
+        color: var(--tg-text-primary);
+    }
+
+    .empty-chat i {
+        color: var(--tg-text-secondary);
+    }
+
+    /* Скроллбар */
+    .contacts-list::-webkit-scrollbar,
+    .chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .contacts-list::-webkit-scrollbar-track,
+    .chat-messages::-webkit-scrollbar-track {
+        background: var(--tg-primary);
+    }
+
+    .contacts-list::-webkit-scrollbar-thumb,
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: var(--tg-border);
+        border-radius: 3px;
+    }
+
+    .contacts-list::-webkit-scrollbar-thumb:hover,
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: var(--tg-text-secondary);
+    }
+
+    /* Мобильная версия */
+    @media (max-width: 768px) {
+        .messages-container {
+            background: var(--tg-secondary);
+        }
+        
+        .contacts-sidebar {
+            background: var(--tg-primary);
+        }
+        
+        .chat-container {
+            background: var(--tg-secondary);
+        }
+        
+        .chat-input {
+            background: var(--tg-primary);
+        }
+    }
+}
+
+/* Дополнительные улучшения для Telegram-like стиля */
+.message-bubble {
+    max-width: 65%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.message-outgoing .message-bubble {
+    border-bottom-right-radius: 0;
+}
+
+.message-incoming .message-bubble {
+    border-bottom-left-radius: 0;
+}
+
+.message-time {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    margin-top: 3px;
+}
+
+.contact-avatar {
+    width: 40px;
+    height: 40px;
+}
+
+.online-badge {
+    background: #00c853;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--tg-primary);
+}
+
+.contacts-search i {
+    color: var(--tg-text-secondary);
+}
+
+.mobile-back-btn {
+    color: var(--tg-text-primary);
 }
 </style>
 
@@ -601,5 +825,189 @@ document.getElementById('send-message-form')?.addEventListener('submit', functio
         <?php endif; ?>
     </div>
 </div>
+<style>
+/* Исправление текста в боковом меню для темной темы */
+@media (prefers-color-scheme: dark) {
+    .sidebar-item {
+        color: #ffffff !important;
+    }
+    .mobile-bottom-nav{
+        background: #1a1a1a;
+    }
+    .sidebar-item:hover,
+    .sidebar-item.active {
+        color: var(--tg-primary) !important;
+    }
+    .sidebar-menu{
+        background: black;
+    }
+    .sidebar-item i {
+        color: #a8a8a8 !important;
+    }
+    .sidebar-item:hover i,
+    .sidebar-item.active i {
+        color: #0088cc !important;
+    }
+    
+    .sidebar-item span {
+        color: inherit !important;
+    }
+    .mobile-nav-item.active{
+        color: #0088cc !important;
+    }
+    /* Улучшение контрастности */
+    .sidebar-header {
+        background: #1a1a1a !important;
+        border-bottom: 1px solid var(--tg-border) !important;
+    }
+    
+    .sidebar-items {
+        background: #1a1a1a !important;
+        color: #1a1a1a1a !important;
+    }
+    
+    .sidebar-footer {
+        background: var(--tg-card-bg) !important;
+        border-top: 1px solid var(--tg-border) !important;
+    }
+    
+    .sidebar-user-name {
+        color: #ffffff !important;
+    }
+    
+    .sidebar-user-status {
+        color: #a8a8a8 !important;
+    }
+    
+    /* Дополнительное улучшение видимости */
+    .sidebar-item {
+        border-left: 3px solid transparent;
+    }
+    
+    .sidebar-item:hover,
+    .sidebar-item.active {
+        background: rgba(0, 136, 204, 0.1) !important;
+        border-left-color: #0088cc !important;
+        color: #0088cc !important;
+    }
+    
+    /* Улучшение иконок */
+    .sidebar-item i {
+        filter: brightness(1.2);
+    }
+}
+
+/* Дополнительные гарантии видимости текста */
+.sidebar-item {
+    font-weight: 500 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-item span {
+    font-weight: 500 !important;
+}
+
+/* Принудительное применение стилей если автоматическая тема не сработала */
+.sidebar-menu {
+    color-scheme: light dark;
+}
+
+/* Резервный вариант для темной темы */
+[data-theme="dark"] .sidebar-item,
+.dark-mode .sidebar-item,
+body.dark .sidebar-item {
+    color: #ffffff !important;
+    background-color: #1a1a1a !important;
+}
+
+[data-theme="dark"] .sidebar-item:hover,
+[data-theme="dark"] .sidebar-item.active,
+.dark-mode .sidebar-item:hover,
+
+body.dark .sidebar-item:hover,
+body.dark .sidebar-item.active {
+    color: #0088cc !important;
+}
+
+/* Улучшение для мобильной версии */
+@media (max-width: 768px) {
+    .contacts-list{
+        margin-bottom: 50px !important;
+    }
+    .sidebar-item {
+        font-size: 16px !important;
+        padding: 16px 20px !important;
+        margin-left: 50px;
+    }
+    
+    .sidebar-item i {
+        font-size: 20px !important;
+        width: 28px !important;
+    }
+    
+    .sidebar-item span {
+        font-size: 16px !important;
+        font-weight: 500 !important;
+    }
+}
+
+/* Повышение контрастности для accessibility */
+.sidebar-item {
+    contrast: 4.5 !important;
+}
+
+/* Гарантия что текст всегда будет виден */
+.sidebar-items {
+        background: #1a1a1a !important;
+        color: #1a1a1a1a !important;
+    }
+
+.sidebar-item {
+    background: transparent !important;
+}
+
+.sidebar-item:hover {
+    background: #2a2a2a !important;
+}
+
+.sidebar-item.active {
+    background: #16303d !important;
+    color: #0088cc !important;
+}
+</style>
+
+<script>
+// Дополнительный скрипт для гарантии видимости текста
+document.addEventListener('DOMContentLoaded', function() {
+    // Проверяем темную тему и принудительно применяем стили
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (isDarkMode) {
+        // Добавляем класс для темной темы
+        document.body.classList.add('dark-mode');
+        
+        // Принудительно обновляем стили sidebar
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        sidebarItems.forEach(item => {
+            item.style.color = '#ffffff';
+            item.style.fontWeight = '500';
+        });
+        
+        const sidebarActiveItems = document.querySelectorAll('.sidebar-item.active');
+        sidebarActiveItems.forEach(item => {
+            item.style.color = 'var(--tg-primary)';
+        });
+    }
+    
+    // Слушаем изменения темы
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (e.matches) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    });
+});
+</script>
 
 <?php require_once 'includes/footer.php'; ?>

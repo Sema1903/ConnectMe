@@ -400,6 +400,9 @@ if ($existing_post) {
         }
         
         @media (max-width: 768px) {
+            body{
+                margin-bottom: 50px !important;
+            }
             .fighters {
                 flex-direction: column;
             }

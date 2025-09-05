@@ -657,6 +657,9 @@ document.addEventListener('DOMContentLoaded', function() {
     .mobile-controls {
         display: block; /* Показываем на мобильных устройствах */
     }
+    .snake-game-container{
+        margin-bottom: 100px;
+    }
 }
 </style>
 

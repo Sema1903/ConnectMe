@@ -411,7 +411,43 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 100%;
         justify-content: space-around;
     }
+    .memory-game-container{
+        margin-bottom: 100px;
+    }
 }
 </style>
-
+<style>
+    @media (prefers-color-scheme: light) {
+        .mobile-menu-btn{
+            color: black;
+        }
+        .mobile-menu-btn:hover{
+            background: #f5f5f5;
+        }
+        .sidebar-items{
+            background: #ffffff !important;
+        }
+        .sidebar-item{
+            background: #ffffff !important;
+        }
+        .sidebar-item.active{
+            background: #e3f2fc !important;
+            border-left-color: #0589c6 !important;
+            color: #000000 !important;
+        }
+        .sidebar-item:hover{
+            background: #f5f5f5 !important;
+            border-left-color: #0589c6 !important;
+        }
+        .mobile-nav-item.active{
+            color: #0589c6;
+        }
+        .mobile-nav-item:hover{
+            background: #f5f5f5;
+        }
+        .sidebar-badge{
+            background: #0589c6;
+        }
+    }
+</style>
 <?php include 'includes/footer.php'; ?>
