@@ -973,12 +973,21 @@ if ($profile_user) {
         box-shadow: 0 0 30px var(--primary);
         clip-path: polygon(0 0, 100% 0, 100% 90%, 80% 100%, 0 100%);
     }
-    
+    .profile-style-default .profile-tab.active{
+        background: var(--primary) !important;
+        color: #000000 !important;
+    }
+    .profile-style-default a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+    .profile-style-default .profile-tab:hover{
+        background: var(--secondary) !important;
+        color: #000000 !important;
+    }
     .profile-style-default .profile-avatar {
         border: 3px solid var(--primary);
         box-shadow: 0 0 20px var(--primary);
     }
-    
     .profile-style-default .btn-primary {
         background: linear-gradient(45deg, var(--primary), var(--secondary));
         color: black;
@@ -1000,7 +1009,9 @@ if ($profile_user) {
             linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
         font-family: 'Russo One', sans-serif;
     }
-    
+    .profile-style-got .stat-item{
+        color: #000000 !important;
+    }
     .profile-style-got .profile-header {
         background: var(--card);
         border-left: 10px solid var(--primary);
@@ -1008,7 +1019,17 @@ if ($profile_user) {
         position: relative;
         overflow: hidden;
     }
-    
+    .profile-style-got .profile-tab.active{
+        background: var(--primary) !important;
+        color: #fff !important;
+    }
+    .profile-style-got a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+    .profile-style-got .profile-tab:hover{
+        background: var(--secondary) !important;
+        color: #fff !important;
+    }
     .profile-style-got .profile-header::before {
         content: '';
         position: absolute;
@@ -1045,7 +1066,13 @@ if ($profile_user) {
         background-repeat: repeat-x;
         background-position: bottom;
     }
-    
+    .profile-style-khakas .profile-tab.active{
+        background: var(--primary) !important;
+        color: #00ff00 !important;
+    }
+    .profile-style-khakas a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
     .profile-style-khakas .profile-avatar {
         border: 3px solid var(--secondary);
         box-shadow: 5px 5px 0 var(--primary);
@@ -1070,7 +1097,17 @@ if ($profile_user) {
             -8px -8px 15px rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(10px);
     }
-    
+    .profile-style-modern .profile-tab.active{
+        background: var(--primary) !important;
+        color: #ffffff !important;
+    }
+    .profile-style-modern a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+    .profile-style-modern .profile-tab:hover{
+        background: var(--secondary) !important;
+        color: #ffffff !important;
+    }
     .profile-style-modern .profile-avatar {
         box-shadow: 
             5px 5px 10px rgba(0, 0, 0, 0.1),
@@ -1089,7 +1126,17 @@ if ($profile_user) {
             var(--bg);
         font-family: 'Pacifico', cursive;
     }
-    
+    .profile-style-cute .profile-tab.active{
+        background: var(--primary) !important;
+        color: #ffffff !important;
+    }
+    .profile-style-cute a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+    .profile-style-cute .profile-tab:hover{
+        background: var(--secondary) !important;
+        color: #ffffff !important;
+    }
     .profile-style-cute .profile-header {
         background: var(--card);
         border-radius: 50px 0 50px 0;
@@ -1114,7 +1161,17 @@ if ($profile_user) {
             var(--bg);
         font-family: 'Rubik Mono One', sans-serif;
     }
-    
+    .profile-style-street .profile-tab.active{
+        background: var(--primary) !important;
+        color: #000000 !important;
+    }
+    .profile-style-street a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+    .profile-style-street .profile-tab:hover{
+        background: var(--secondary) !important;
+        color: #ffffff !important;
+    }
     .profile-style-street .profile-header {
         background: var(--card);
         border: 5px solid var(--secondary);
@@ -1138,6 +1195,17 @@ if ($profile_user) {
             url('/assets/images/backgrounds/marvel-comic.png'),
             var(--bg);
         font-family: 'Bangers', cursive;
+    }
+    .profile-style-marvel .profile-tab.active{
+        background: var(--primary) !important;
+        color: #000000 !important;
+    }
+    .profile-style-marvel a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+    .profile-style-marvel .profile-tab:hover{
+        background: var(--secondary) !important;
+        color: #ffffff !important;
     }
     .profile-style-marvel .profile-header {
         background: var(--card);
@@ -1165,6 +1233,17 @@ if ($profile_user) {
             url('/assets/images/backgrounds/cyber-grid.png'),
             var(--bg);
         font-family: 'Press Start 2P', cursive;
+    }
+    .profile-style-cyber .profile-tab.active{
+        background: var(--primary) !important;
+        color: #000000 !important;
+    }
+    .profile-style-cyber a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+    .profile-style-cyber .profile-tab:hover{
+        background: var(--secondary) !important;
+        color: #000000 !important;
     }
     .profile-style-cyber .comment{
         background: var(--card);
@@ -1210,7 +1289,17 @@ if ($profile_user) {
             var(--bg);
         font-family: 'Arial Black', sans-serif;
     }
-    
+    .profile-style-sport .profile-tab.active{
+        background: var(--primary) !important;
+        color: #000000 !important;
+    }
+    .profile-style-sport a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+    .profile-style-sport .profile-tab:hover{
+        background: var(--secondary) !important;
+        color: #000000 !important;
+    }
     .profile-style-sport .profile-header {
         background: var(--card);
         border-top: 10px solid var(--primary);
@@ -1241,7 +1330,17 @@ if ($profile_user) {
             var(--bg);
         font-family: 'Georgia', serif;
     }
-    
+    .profile-style-nature .profile-tab.active{
+        background: var(--primary) !important;
+        color: #000000 !important;
+    }
+    .profile-style-nature a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+    .profile-style-nature .profile-tab:hover{
+        background: var(--secondary) !important;
+        color: #000000 !important;
+    }
     .profile-style-nature .profile-header {
         background: var(--card);
         border-radius: 0 0 30px 30px;
@@ -2400,7 +2499,17 @@ if ($profile_user) {
     border: 3px solid var(--primary-color);
     background: var(--card-bg);
 }
-
+.profile-style-bronze .profile-tab.active{
+        background: var(--primary-color) !important;
+        color: #fff !important;
+    }
+.profile-style-bronze a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+.profile-style-bronze .profile-tab:hover{
+        background: var(--secondary-color) !important;
+        color: #fff !important;
+    }
 .profile-style-bronze .profile-tab.active {
     background: var(--primary-color);
     color: white;
@@ -2425,7 +2534,17 @@ if ($profile_user) {
             url('/assets/images/backgrounds/silver.jpg') center/cover no-repeat,
             linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
 }
-
+.profile-style-silver .profile-tab.active{
+        background: var(--primary-color) !important;
+        color: #fff !important;
+    }
+.profile-style-silver a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+.profile-style-silver .profile-tab:hover{
+        background: var(--secondary-color) !important;
+        color: #fff !important;
+    }
 .profile-style-silver .profile-header {
     border: 3px solid var(--primary-color);
     background: var(--card-bg);
@@ -2456,7 +2575,17 @@ if ($profile_user) {
             url('/assets/images/backgrounds/gold.jpg') center/cover no-repeat,
             linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
 }
-
+.profile-style-gold .profile-tab.active{
+        background: var(--primary-color) !important;
+        color: #fff !important;
+    }
+.profile-style-gold a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+.profile-style-gold .profile-tab:hover{
+        background: var(--secondary-color) !important;
+        color: #fff !important;
+    }
 .profile-style-gold .profile-header {
     border: 3px solid var(--primary-color);
     background: var(--card-bg);
@@ -2487,6 +2616,20 @@ if ($profile_user) {
         radial-gradient(circle at 80% 70%, var(--secondary-color), transparent 50%),
         var(--bg-color);
     font-family: 'Montserrat', sans-serif;
+}
+.profile-style-vip .profile-tab.active{
+        background: var(--primary-color) !important;
+        color: #fff !important;
+    }
+.profile-style-vip a:hover{
+        background: rgb(0, 0, 0, 0) !important;
+    }
+.profile-style-vip .profile-tab:hover{
+        background: var(--secondary-color) !important;
+        color: #fff !important;
+    }
+.profile-style-vip .stat-item{
+    color: #000 !important;
 }
 .profile-style-vip .comment{
     border: 2px solid var(--primary-color);
@@ -2555,13 +2698,13 @@ if ($profile_user) {
             <h3><i class="fas fa-info-circle"></i> Информация</h3>
             <?php if (!empty($profile_user['bio'])): ?>
                 <div class="info-item">
-                    <i class="fas fa-quote-left"></i>
+                    <i class="fas fa-quote-left" style='margin-right: 20px'></i>
                     <span><?= htmlspecialchars($profile_user['bio']) ?></span>
                 </div>
             <?php endif; ?>
             
             <div class="info-item">
-                <i class="fas fa-calendar-alt"></i>
+                <i class="fas fa-calendar-alt" style='margin-right: 20px'></i>
                 <span>Зарегистрирован: <?= date('d.m.Y', strtotime($profile_user['created_at'])) ?></span>
             </div>
         </div>
@@ -2630,9 +2773,9 @@ if ($profile_user) {
                     <?php endif; ?>
                 </div>
                 <div class="profile-text">
-                    <h1><?= htmlspecialchars($profile_user['full_name']) ?> / <a href = '#'>@<?= htmlspecialchars($profile_user['username']) ?></a></h1>
+                    <h1><?= htmlspecialchars($profile_user['full_name']) ?> / @<?= htmlspecialchars($profile_user['username']) ?></p></h1>
                     <?php
-                    function truncateText($text, $length = 80) {
+                    function truncateText($text, $length = 39) {
                         if (empty($text)) return '';
                         if (mb_strlen($text, 'UTF-8') > $length) {
                             return htmlspecialchars(mb_substr($text, 0, $length, 'UTF-8')) . '...';
@@ -2641,8 +2784,16 @@ if ($profile_user) {
                     }
                     ?>
 
-                    <p class="profile-bio"><?= truncateText($profile_user['bio'] ?? '') ?></p>
-                    
+
+
+
+
+                    <p class="profile-bio" onclick="showFullBio()" style="cursor: pointer;" title="Нажмите для просмотра полного описания">
+                        <?= truncateText($profile_user['bio'] ?? '') ?><br>
+                        <i class="fas fa-info"></i> <u>Полное описание</u>
+                    </p>
+
+
                     <div class="profile-stats">
                         <div class="stat-item">
                             <i class="fas fa-users"></i>
@@ -2686,7 +2837,7 @@ if ($profile_user) {
                     </a>
                 </div>
                 <?php elseif ($is_own_profile): ?>
-                <div class="profile-actions">
+                <div class="profile-actions" id='edit-btn'>
                     <a href="/edit_profile.php" class="btn btn-secondary">
                         <i class="fas fa-edit"></i> Редактировать профиль
                     </a>
@@ -2697,7 +2848,7 @@ if ($profile_user) {
 
         <?php if ($is_own_profile): ?>
             <button onclick="toggleCryptoPopup()" class="crypto-wallet-btn">
-                <i class="fab fa-ethereum"></i> ConnectCoin
+                <i class="fab fa-ethereum"></i> CC
             </button>
         <?php endif; ?>
 
@@ -3009,7 +3160,24 @@ if ($profile_user) {
             </div>
         </div>
     </div>
-</div>
+
+
+
+
+
+
+
+    <!-- Модальное окно для полного описания профиля -->
+    <div id="bioModal" class="bio-modal">
+        <div class="bio-modal-content">
+            <div class="bio-modal-header">
+                <h3>Описание профиля</h3>
+                <button class="bio-close" onclick="closeBioModal()">&times;</button>
+            </div>
+            <div class="bio-text" id="fullBioText"></div>
+        </div>
+    </div>
+    </div>
 <!-- Добавить в конец body -->
 <div id="cryptoPopup" class="crypto-popup">
     <div class="crypto-header">
@@ -3594,6 +3762,69 @@ document.getElementById('poll-has-deadline').addEventListener('change', function
         deadlineInput.min = now.toISOString().slice(0, 16);
         deadlineInput.value = now.toISOString().slice(0, 16);
     }
+});
+
+
+
+
+
+
+
+
+
+// Функция для показа полного описания профиля
+function showFullBio() {
+    const bioText = '<?= addslashes($profile_user["bio"] ?? "") ?>';
+    if (!bioText.trim()) return;
+    
+    const modal = document.getElementById('bioModal');
+    const bioContent = document.getElementById('fullBioText');
+    
+    bioContent.textContent = bioText;
+    modal.style.display = 'block';
+    
+    // Добавляем обработчик для клавиши ESC
+    document.addEventListener('keydown', handleEscKey);
+}
+
+// Функция для закрытия модального окна
+function closeBioModal() {
+    const modal = document.getElementById('bioModal');
+    modal.style.display = 'none';
+    
+    // Убираем обработчик клавиши ESC
+    document.removeEventListener('keydown', handleEscKey);
+}
+
+// Обработчик клавиши ESC
+function handleEscKey(event) {
+    if (event.key === 'Escape') {
+        closeBioModal();
+    }
+}
+
+// Обработчики событий для модального окна
+document.addEventListener('DOMContentLoaded', function() {
+    const bioModal = document.getElementById('bioModal');
+    const bioClose = document.querySelector('.bio-close');
+    
+    // Клик по описанию профиля
+    const profileBio = document.querySelector('.profile-bio');
+    if (profileBio && profileBio.textContent.trim()) {
+        profileBio.style.cursor = 'pointer';
+        profileBio.title = 'Нажмите для просмотра полного описания';
+        profileBio.addEventListener('click', showFullBio);
+    }
+    
+    // Закрытие по крестику
+    bioClose.addEventListener('click', closeBioModal);
+    
+    // Закрытие по клику вне окна
+    bioModal.addEventListener('click', function(event) {
+        if (event.target === bioModal) {
+            closeBioModal();
+        }
+    });
 });
 </script>
 
@@ -4327,7 +4558,7 @@ document.getElementById('poll-has-deadline').addEventListener('change', function
 .dark-mode .sidebar-item,
 body.dark .sidebar-item {
     color: #ffffff !important;
-    background-color: #1a1a1a !important;
+    /*background-color: #1a1a1a !important;*/
 }
 
 [data-theme="dark"] .sidebar-item:hover,
@@ -4342,7 +4573,7 @@ body.dark .sidebar-item.active {
 /* Улучшение для мобильной версии */
 @media (max-width: 768px) {
     body{
-        margin-bottom: 50px !important;
+        margin-bottom: 50px;
     }
     .sidebar-item {
         font-size: 16px !important;
@@ -4358,6 +4589,13 @@ body.dark .sidebar-item.active {
     .sidebar-item span {
         font-size: 16px !important;
         font-weight: 500 !important;
+    }
+    #edit-btn{
+        /*width: 200% !important;*/
+        width: auto !important;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
     }
 }
 
@@ -4418,5 +4656,120 @@ body.dark .sidebar-item.active {
             background: #0589c6;
         }
     }
+
+
+
+
+
+
+
+
+/* Модальное окно для полного описания профиля */
+.bio-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+}
+
+.bio-modal-content {
+    background-color: var(--card-bg);
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    color: var(--text-color);
+}
+
+.bio-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.bio-modal-header h3 {
+    margin: 0;
+    color: var(--primary-color);
+}
+
+.bio-close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.bio-close:hover {
+    color: var(--primary-color);
+}
+
+.bio-text {
+    line-height: 1.6;
+    font-size: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 8px;
+}
+
+/* Адаптивность для модального окна */
+@media (max-width: 768px) {
+    .bio-modal-content {
+        margin: 20% auto;
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .bio-text {
+        max-height: 250px;
+    }
+    .profile-avatar{
+        margin-bottom: 0px !important;
+    }
+    .profile-stats{
+        margin-top: 30px !important;
+    }
+    .cover-container{
+        height: 150px !important;
+    }
+    .profile-header{
+        height: 500px !important;
+    }
+    .profile-style-default .stat-item{
+        color: #ffffff !important;
+    }
+    .profile-style-got .stat-item{
+        color: #ffffff !important;
+    }
+    .profile-style-vip .stat-item{
+        color: #ffffff !important;
+    }
+    .profile-sidebar{
+        display: none;
+    }
+}
+.tab-content{
+    background: rgb(0, 0, 0, 0) !important;
+}
+.profile-text{
+    height: 170px !important;
+}
 </style>
 <?php require_once 'includes/footer.php'; ?>

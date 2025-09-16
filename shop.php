@@ -65,7 +65,28 @@ require_once('includes/header.php');
                     <?php endif; ?>
                     
                     <div class="gift-icon">
-                        <i class="fas fa-<?= htmlspecialchars($item['icon']) ?>"></i>
+                        <!--<i class="fas fa-<?= htmlspecialchars($item['icon']) ?>"></i>-->
+                        
+                        
+                        
+                        
+                        <?php 
+                            $src = '';
+                            if($item['id'] == 1){
+                                $src = 'assets/images/covers/bronze.jpg';
+                            }else if($item['id'] == 2){
+                                $src = 'assets/images/covers/silver.jpg';
+                            }else if($item['id'] == 3){
+                                $src = 'assets/images/covers/gold.jpg';
+                            }else if($item['id'] == 4){
+                                $src = 'assets/images/covers/vip.jpg';
+                            }
+                            echo '<img src="' . $src . '" class="icon_img">';
+                        ?>
+
+
+
+
                     </div>
                     
                     <div class="gift-info">
@@ -99,7 +120,20 @@ require_once('includes/header.php');
                 <?php foreach ($user_items as $item): ?>
                 <div class="gift-card inventory <?= $item['is_active'] ? 'active' : '' ?>">
                     <div class="gift-icon">
-                        <i class="fas fa-<?= htmlspecialchars($item['icon']) ?>"></i>
+                        <!--<i class="fas fa-<?= htmlspecialchars($item['icon']) ?>"></i>-->
+                        <?php 
+                            $src = '';
+                            if($item['item_id'] == 1){
+                                $src = 'assets/images/covers/bronze.jpg';
+                            }else if($item['item_id'] == 2){
+                                $src = 'assets/images/covers/silver.jpg';
+                            }else if($item['item_id'] == 3){
+                                $src = 'assets/images/covers/gold.jpg';
+                            }else if($item['item_id'] == 4){
+                                $src = 'assets/images/covers/vip.jpg';
+                            }
+                            echo '<img src="' . $src . '" class="icon_img">';
+                        ?>
                     </div>
                     
                     <div class="gift-info">
@@ -453,7 +487,7 @@ body {
 
 /* Иконка подарка */
 .gift-icon {
-    padding: 25px 0;
+    padding: 0px 0;
     text-align: center;
     background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
 }
@@ -778,5 +812,14 @@ body {
             background: #0589c6;
         }
     }
+    .icon_img{
+        object-fit: cover;
+        width: 400px;
+        height: 100px;
+        top: 100px;
+    }
+.tab-content{
+    background: #ffffff !important;
+}
 </style>
 <?php require_once('includes/footer.php'); ?>

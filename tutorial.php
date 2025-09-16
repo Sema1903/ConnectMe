@@ -15,7 +15,7 @@ require_once 'includes/header.php';
         <div class="telegram-bottom-menu" style="position: fixed; bottom: -700px; left: 0; right: 0; background: var(--card-bg); border-radius: 20px 20px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); z-index: 999; transition: bottom 0.4s ease; padding: 20px; max-height: 80vh; overflow-y: auto;">
             <div class="menu-header" style="text-align: center; margin-bottom: 20px; position: relative;">
                 <div class="drag-handle" style="width: 40px; height: 4px; background: #ccc; border-radius: 2px; margin: 0 auto 15px;"></div>
-                <h3 style="color: var(--text-color); margin: 0; font-weight: 600;">🎯 Меню функций</h3>
+                <h3 style="color: #ffffff !important; margin: 0; font-weight: 600;">🎯 Меню функций</h3>
                 <div class="close-menu" style="position: absolute; right: 0; top: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-color);">
                     <i class="fas fa-times"></i>
                 </div>
@@ -121,12 +121,12 @@ require_once 'includes/header.php';
         <div class="tab-content" style="background: var(--card-bg); border-radius: 12px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); min-height: 400px;">
             
             <!-- О ConnectMe -->
-            <div class="tab-pane active" id="about">
+            <div class="tab-pane active" id="about" style='background: #2a2a2a !important'>
                 <h2 style="color: var(--primary-color); margin-bottom: 20px;">🌟 Добро пожаловать в ConnectMe!</h2>
                 <div style="line-height: 1.6; color: var(--text-color);">
                     <p>ConnectMe — это современная социальная платформа, созданная специально для подростков, где можно общаться, делиться творчеством и находить новых друзей в безопасной среде!</p>
                     
-                    <div style="background: var(--bg-color); padding: 20px; border-radius: 12px; margin: 20px 0;">
+                    <div style="background: #2a2a2a !important; padding: 20px; border-radius: 12px; margin: 20px 0;">
                         <h3 style="color: var(--primary-color); margin-top: 0;">🎯 Наша философия: Безопасность • Свобода • Комфорт</h3>
                         
                         <div style="display: flex; align-items: center; margin: 15px 0;">
@@ -881,7 +881,7 @@ document.addEventListener('DOMContentLoaded', function() {
         color: #ffffff !important;
     }
     h1{
-        color: #000000 !important;
+        color: #ffffff !important;
     }
 
     .tab-content p {

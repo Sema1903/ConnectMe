@@ -277,6 +277,19 @@ CREATE TABLE IF NOT EXISTS challenge_bets (
     FOREIGN KEY (challenge_id) REFERENCES challenges(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+CREATE TABLE IF NOT EXISTS reactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    post_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    emoji TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    -- Убираем UNIQUE constraint, чтобы разрешить multiple reactions
+);
+
+-- Добавляем индекс для быстрого подсчета
+CREATE INDEX IF NOT EXISTS idx_reactions_user_post ON reactions (user_id, post_id);
 
 -- Add challenge_id to posts table
 --ALTER TABLE posts ADD COLUMN challenge_id INTEGER REFERENCES challenges(id);
@@ -364,7 +377,7 @@ function initializeDemoData($db) {
     // Добавьте этот код в функцию initializeDemoData($db) после создания других таблиц
 }
 
-//initializeDemoData($db);
+initializeDemoData($db);
 
 // Функция для получения текущего пользователя
 function getCurrentUser($db) {

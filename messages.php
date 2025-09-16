@@ -257,9 +257,8 @@ if (isset($_GET['user_id'])) {
     padding: 15px;
     border-top: 1px solid var(--border-color);
     background: var(--card-bg);
-    height: 100px;
-    position: fixed;
-    top: 700px !important;
+    position: fixed; 
+    bottom: 30px !important;
 }
 
 .chat-form {
@@ -759,7 +758,7 @@ if (isset($_GET['user_id'])) {
             <!-- В разделе чата обновляем только блок с формой ввода -->
             <div class="chat-input">
                 <form class="chat-form" id="send-message-form">
-                    <input type="text" name="message" placeholder="Написать сообщение..." autocomplete="off">
+                    <input type="text" name="message" placeholder="Написать сообщение..." autocomplete="off" id='input'>
                     <button type="submit">
                         <i class="fas fa-paper-plane send-icon"></i>
                     </button>
@@ -931,6 +930,15 @@ body.dark .sidebar-item.active {
 
 /* Улучшение для мобильной версии */
 @media (max-width: 768px) {
+    .chat-input{
+        margin-top: 125px !important;
+    }
+    .contacts-header{
+        margin-top: 25px;
+    }
+    .chat-header{
+        margin-top: 40px;
+    }
     .contacts-list{
         margin-bottom: 50px !important;
     }
@@ -1008,6 +1016,79 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+// Предотвращаем поднятие нижнего меню при фокусе на поле ввода
+document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.querySelector('.chat-form input');
+    
+    if (messageInput) {
+        messageInput.addEventListener('focus', function() {
+            document.querySelector('.mobile-bottom-nav').style.display = 'none';
+        });
+        
+        messageInput.addEventListener('blur', function() {
+            setTimeout(function() {
+                document.querySelector('.mobile-bottom-nav').style.display = 'block';
+            }, 300);
+        });
+    }
+});
 </script>
+<style>
+    @media (prefers-color-scheme: light) {
+        .mobile-back-btn{
+            color: #0589c6;
+        }
+        .mobile-menu-btn{
+            color: black;
+        }
+        .mobile-menu-btn:hover{
+            background: #f5f5f5;
+        }
+        .sidebar-items{
+            background: #ffffff !important;
+        }
+        .sidebar-item{
+            background: #ffffff !important;
+        }
+        .sidebar-item.active{
+            background: #e3f2fc !important;
+            border-left-color: #0589c6 !important;
+            color: #000000 !important;
+        }
+        .sidebar-item:hover{
+            background: #f5f5f5 !important;
+            border-left-color: #0589c6 !important;
+        }
+        .mobile-nav-item.active{
+            color: #0589c6;
+        }
+        .mobile-nav-item:hover{
+            background: #f5f5f5;
+        }
+        .sidebar-badge{
+            background: #0589c6;
+        }
+    }
+    @media(min-width: 768px){
+        .chat-input{
+            margin-bottom: -40px;
+            margin-left: 470px;
+            margin-right: 120px;
+    }
+    }
+    @media (max-width: 768px) {
+    .chat-input {
+        position: fixed;
+        bottom: 0px;
+        left: 0;
+        right: 0;
+        z-index: 1000; /* Добавьте это свойство */
+    }
+    
+    .chat-form input {
+        font-size: 16px; /* Это предотвращает масштабирование на iOS */
+    }
+}
 
+</style>
 <?php require_once 'includes/footer.php'; ?>

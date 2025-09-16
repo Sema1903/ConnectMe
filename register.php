@@ -2,6 +2,13 @@
 require_once 'includes/config.php';
 require_once 'includes/auth.php';
 
+
+
+// В процессе регистрации добавить
+
+
+
+
 if (isLoggedIn()) {
     header('Location: /');
     exit;
@@ -23,8 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $success = $result['message'];
         $showTutorialQuestion = true;
         
-        // Сохраняем ID пользователя в сессии для использования после ответа на вопрос
-        $_SESSION['new_user_id'] = $result['user_id'] ?? null;
+
     } else {
         $error = $result['message'];
     }
@@ -133,6 +139,9 @@ require_once 'includes/header.php';
 </main>
 
 <style>
+h1{
+    color: #000000;
+}
 /* Стили для кнопок выбора обучалки */
 @media (prefers-color-scheme: dark) {
     .post-action-btn[style*="background-color: #6c757d"] {

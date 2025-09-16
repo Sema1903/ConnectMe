@@ -80,7 +80,7 @@ require_once 'includes/header.php';
     }
     
     h1 {
-        color: #ffffff;
+        color: #ffffff !important;
     }
     
     /* Стили для сообщений об ошибках и успехе */
@@ -325,7 +325,9 @@ input[type="password"],
     --card-bg: #ffffff;
     --border-color: #ddd;
 }
-
+h1{
+    color: #000000;
+}
 .messages-container {
     display: flex;
     height: calc(100vh - 80px);

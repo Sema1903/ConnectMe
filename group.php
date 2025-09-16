@@ -31,6 +31,43 @@ if ($current_user) {
 // Получаем участников группы
 $members = getGroupMembers($db, $group_id);
 
+
+
+
+
+
+
+
+
+
+// Получаем посты группы
+$posts = getGroupPosts($db, $group['id']);
+
+// ДОБАВЬТЕ ЭТОТ КОД СРАЗУ ПОСЛЕ ПОЛУЧЕНИЯ ПОСТОВ:
+
+// Обрабатываем каждый пост - добавляем информацию о реакциях
+// Заменяем старый код на этот:
+foreach ($posts as &$post) {
+    $post['reactions'] = getReactionCounts($db, $post['id']);
+    
+    if ($current_user) {
+        // Получаем ВСЕ реакции пользователя на этот пост
+        $post['user_reactions'] = getUserReactions($db, $post['id'], $current_user['id']);
+        // Получаем количество реакций пользователя
+        $post['user_reaction_count'] = count($post['user_reactions']);
+        // Проверяем, достигнут ли лимит
+        $post['can_react'] = $post['user_reaction_count'] < 3;
+    } else {
+        $post['user_reactions'] = [];
+        $post['user_reaction_count'] = 0;
+        $post['can_react'] = false;
+    }
+    
+    $post['total_reactions'] = array_sum($post['reactions']);
+}
+unset($post);
+
+
 require_once 'includes/header.php';
 ?>
 
@@ -198,6 +235,56 @@ require_once 'includes/header.php';
                                 <p class="post-text"><?= nl2br(htmlspecialchars($post['content'])) ?></p>
                                 <?php if ($post['image']): ?>
                                     <img src="/assets/images/posts/<?= $post['image'] ?>" alt="Post Image" class="post-image">
+                                <?php endif; ?>
+                            </div>
+
+
+
+
+
+
+                            <!-- Внутри цикла постов, после блока .post-content добавьте: -->
+                            <div class="post-reactions">
+                                <div class="reactions-stats">
+                                    <?php if (!empty($post['reactions'])): ?>
+                                        <?php foreach ($post['reactions'] as $emoji => $count): ?>
+                                            <span class="reaction-badge"><?= htmlspecialchars($emoji) ?> <?= $count ?></span>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <?php if ($current_user): ?>
+                                    <div class="reaction-picker">
+                                        <?php if ($post['can_react']): ?>
+                                            <button class="reaction-btn" onclick="toggleReactions(<?= $post['id'] ?>)">
+                                                <i class="fas fa-smile"></i>
+                                                <span class="reaction-count"><?= $post['user_reaction_count'] ?>/3</span>
+                                            </button>
+                                            
+                                            <div class="reactions-menu" id="reactions-<?= $post['id'] ?>" style="display: none;">
+                                                <?php 
+                                                $common_reactions = ['😁', '🤗', '😢', '😡', '🤔', '😨', '🆒'];
+                                                foreach ($common_reactions as $reaction): 
+                                                ?>
+                                                    <button class="reaction-option" 
+                                                            onclick="reactToPost(<?= $post['id'] ?>, '<?= $reaction ?>')">
+                                                        <?= $reaction ?>
+                                                    </button>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <span class="reaction-limit">Лимит: 3/3</span>
+                                        <?php endif; ?>
+                                        
+                                        <?php if (!empty($post['user_reactions'])): ?>
+                                            <span class="user-reactions">
+                                                Ваши реакции: 
+                                                <?php foreach ($post['user_reactions'] as $reaction): ?>
+                                                    <?= $reaction['emoji'] ?>
+                                                <?php endforeach; ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                             </div>
@@ -1962,4 +2049,167 @@ body.dark .sidebar-item.active {
         }
     }
 </style>
+
+
+
+
+<style>
+.post-reactions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.reactions-stats {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.reaction-badge {
+    background: #f0f2f5;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+.reaction-picker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.reaction-btn {
+    background: none;
+    border: none;
+    color: #65676b;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.reaction-btn:hover {
+    background: #f0f2f5;
+}
+
+.reactions-menu {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background: white;
+    border-radius: 20px;
+    padding: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 5px;
+    z-index: 1000;
+}
+
+.reaction-option {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.reaction-option:hover {
+    transform: scale(1.2);
+    background: #f0f2f5;
+}
+
+.user-reaction {
+    font-size: 0.9rem;
+    color: #65676b;
+}
+
+/* Темная тема */
+@media (prefers-color-scheme: dark) {
+    .post-reactions {
+        border-top-color: var(--tg-dark-border);
+    }
+    
+    .reaction-badge {
+        background: var(--tg-dark-input);
+        color: var(--tg-dark-text);
+    }
+    
+    .reaction-btn {
+        color: var(--tg-dark-text-secondary);
+    }
+    
+    .reaction-btn:hover {
+        background: var(--tg-dark-hover);
+    }
+    
+    .reactions-menu {
+        background: var(--tg-dark-card);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    
+    .reaction-option:hover {
+        background: var(--tg-dark-hover);
+    }
+    
+    .user-reaction {
+        color: var(--tg-dark-text-secondary);
+    }
+}
+</style>
+<script>
+function toggleReactions(postId) {
+    const menu = document.getElementById(`reactions-${postId}`);
+    menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+    
+    // Закрытие других меню
+    document.querySelectorAll('.reactions-menu').forEach(otherMenu => {
+        if (otherMenu.id !== `reactions-${postId}`) {
+            otherMenu.style.display = 'none';
+        }
+    });
+}
+
+function reactToPost(postId, emoji) {
+    fetch('/actions/react_to_post.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            post_id: postId,
+            emoji: emoji
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.message || 'Ошибка при добавлении реакции');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Произошла ошибка');
+    });
+    
+    // Сразу скрываем меню после выбора
+    document.getElementById(`reactions-${postId}`).style.display = 'none';
+}
+// Закрытие меню при клике вне его
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.reaction-picker')) {
+        document.querySelectorAll('.reactions-menu').forEach(menu => {
+            menu.style.display = 'none';
+        });
+    }
+});
+</script>
 <?php require_once 'includes/footer.php'; ?>

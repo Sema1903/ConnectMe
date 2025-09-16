@@ -140,7 +140,11 @@ require_once 'includes/header.php'
                         <i class="fas fa-paper-plane"></i>
                         <span class="submit-text">Опубликовать</span>
                     </button>
-
+                    <!-- В блоке .post-actions добавьте эту кнопку: -->
+                    <button type="button" id="generate-ai-post" class="post-action">
+                        <i class="fas fa-robot"></i>
+                        <span class="action-text">Сгенерировать пост</span>
+                    </button>
                         <label class="post-action photo-action">
                             <i class="fas fa-images"></i>
                             <span class="action-text">Фото/Видео</span>
@@ -181,6 +185,39 @@ require_once 'includes/header.php'
 
                     </div>
                 </form>
+                <!-- Добавьте этот код после блока create-post -->
+                <!-- После блока create-post добавьте: -->
+                <div id="ai-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000;">
+                    <div style="background: var(--card-background); border-radius: 12px; padding: 20px; max-width: 400px; width: 90%;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="margin: 0; color: var(--text-color);">Генерация поста AI</h3>
+                            <button onclick="document.getElementById('ai-modal').style.display = 'none'" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-color);">×</button>
+                        </div>
+                        
+                        <input type="text" id="ai-topic" placeholder="О чем написать пост?" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--hover-background); color: var(--text-color);">
+                        
+                        <button onclick="generatePost()" style="width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                            Сгенерировать
+                        </button>
+                        
+                        <div id="ai-result" style="margin-top: 15px; display: none;">
+                            <div id="generated-text" style="background: var(--hover-background); padding: 15px; border-radius: 8px; margin-bottom: 10px; color: var(--text-color);"></div>
+                            <button onclick="useGeneratedText()" style="width: 100%; padding: 10px; background: var(--accent-color); color: white; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 8px;">
+                                Использовать текст
+                            </button>
+                            <button onclick="generatePost()" style="width: 100%; padding: 10px; background: var(--text-secondary); color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                Сгенерировать снова
+                            </button>
+                        </div>
+                        
+                        <div id="ai-loading" style="text-align: center; display: none; margin-top: 15px;">
+                            <div style="width: 30px; height: 30px; border: 3px solid var(--border-color); border-top: 3px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+                            <p style="margin: 10px 0 0; color: var(--text-color);">Генерируем...</p>
+                        </div>
+
+                        <div id="ai-error" style="color: #dc3545; text-align: center; display: none; margin-top: 15px; padding: 10px; background: rgba(220, 53, 69, 0.1); border-radius: 6px;"></div>
+                    </div>
+                </div>
             </div>
         <?php endif; ?>
         
@@ -694,6 +731,110 @@ document.addEventListener('click', async function(e) {
             }
         });
     });
+    // Добавьте этот код в ваш существующий script section
+// Добавьте этот код в ваш существующий script section
+// Замените весь блок скрипта для AI-генерации на этот код
+document.getElementById('generate-ai-post').addEventListener('click', function() {
+    document.getElementById('ai-modal').style.display = 'flex';
+    document.getElementById('ai-error').style.display = 'none';
+    document.getElementById('ai-result').style.display = 'none';
+});
+
+let isLoading = false;
+
+async function generatePost() {
+    const topic = document.getElementById('ai-topic').value.trim();
+    if (!topic) {
+        showError('Введите тему для поста');
+        return;
+    }
+
+    if (isLoading) return;
+    isLoading = true;
+
+    document.getElementById('ai-loading').style.display = 'block';
+    document.getElementById('ai-result').style.display = 'none';
+    document.getElementById('ai-error').style.display = 'none';
+
+    try {
+        // Используем рабочий endpoint из ai.php
+        const apiKey = "AIzaSyAaR7NckMnmHBijE9SRW7aqIpZm06Z69ZQ";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+        const prompt = `Напиши короткий пост для социальной сети на тему: "${topic}". 
+Длина: 2-3 предложения. Пост должен быть естественным и интересным.`;
+
+        const payload = {
+            contents: [{
+                parts: [{
+                    text: prompt
+                }]
+            }]
+        };
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+
+        const result = await response.json();
+        
+        // Проверяем, не заблокирован ли контент
+        if (result?.promptFeedback?.blockReason) {
+            throw new Error(`Контент заблокирован: ${result.promptFeedback.blockReason}`);
+        }
+
+        const botResponse = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        if (!botResponse) {
+            throw new Error('Не получилось получить ответ от AI');
+        }
+
+        document.getElementById('generated-text').textContent = botResponse;
+        document.getElementById('ai-result').style.display = 'block';
+
+    } catch (error) {
+        console.error('AI Error:', error);
+        showError(`Ошибка генерации: ${error.message}. Проверьте VPN соединение.`);
+    } finally {
+        document.getElementById('ai-loading').style.display = 'none';
+        isLoading = false;
+    }
+}
+
+function showError(message) {
+    const errorElement = document.getElementById('ai-error');
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+}
+
+function useGeneratedText() {
+    const text = document.getElementById('generated-text').textContent;
+    document.querySelector('input[name="content"]').value = text;
+    document.getElementById('ai-modal').style.display = 'none';
+}
+
+// Закрытие модального окна по клику вне его
+document.getElementById('ai-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        this.style.display = 'none';
+    }
+});
+
+// Закрытие по ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('ai-modal').style.display = 'none';
+    }
+});
 </script>
 <style>
     /* Основные стили и переменные */
@@ -2609,5 +2750,10 @@ body.dark .sidebar-item.active {
             background: #0589c6;
         }
     }
+@media(min-width: 800px){
+.page-container{
+    margin-left: -190px !important;
+}
+}
 </style>
 <?php require_once 'includes/footer.php'; ?>

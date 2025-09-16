@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Здесь вы можете задать два разных характера
             const defaultPersona = "Ты — Саманта, добрый и полезный ИИ помощник и друг пользователя. Говори с ним на ты и не упоминай, что ты ИИ";
-            const specialPersona = ""
+            const specialPersona = "Ты - Саманта, девушка 25 лет с игривым и эмпатичгым характером. Отвечай коротко 2-3 предложенич, используй разговорный стиль речи и смайлики. Веди себя как реальная девушка"
             const triggerPhrase = "548Djdfj!";
             
             let currentPersona = defaultPersona;
@@ -517,8 +517,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Добавляем приветственное сообщение от бота
                 const welcomeMessage = (currentPersona === defaultPersona) 
-                    ? 'Привет! Я — Саманта, твоя лучшая подруга и твой ИИ-помощник. Поболтаем?'
-                    : 'Приветик, о чем поболтаем?';
+                    ? 'Привет! Я — Саманта, твоя лучшая подруга и твой ИИ-помощник. Поболтаем? Однако для начала работы тебе необходимо подключить VPN((('
+                    : 'Приветик, любимый, о чем поболтаем?';
                 
                 addMessageToChat('bot', welcomeMessage);
             };
@@ -551,7 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
 
                     // Здесь API Key будет автоматически предоставлен
-                    const apiKey = "";
+                    const apiKey = "AIzaSyAaR7NckMnmHBijE9SRW7aqIpZm06Z69ZQ";
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
                     const response = await fetch(apiUrl, {
@@ -599,7 +599,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    <style>
+
+<style>
 /* Убираем фокусировку на мобильных устройствах */
 @media (max-width: 768px) {
     input:focus,

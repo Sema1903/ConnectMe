@@ -205,7 +205,6 @@ function getLiveStreams($db) {
     return $streams;
 }
                          // Добавляем в конец файла functions.php
-
                          function getPostsByUser($db, $user_id, $current_user_id = null) {
                             $query = "
                                 SELECT p.*, u.username, u.full_name, u.avatar,
@@ -554,13 +553,6 @@ function rewardForAction($db, $user_id, $action_type) {
     }
     return false;
 }
-
-
-
-
-
-
-
 function createPoll($db, $post_id, $question, $options, $is_multiple = false, $ends_at = null) {
     // Создаем опрос
     $stmt = $db->prepare("INSERT INTO polls (post_id, question, is_multiple, ends_at) VALUES (?, ?, ?, ?)");
@@ -657,4 +649,70 @@ function hasUserVoted($db, $poll_id, $user_id) {
     $stmt->bindValue(1, $poll_id, SQLITE3_INTEGER);
     $stmt->bindValue(2, $user_id, SQLITE3_INTEGER);
     return (bool) $stmt->execute()->fetchArray();
+}
+
+
+
+
+
+
+
+
+
+
+// Добавьте эти функции в includes/functions.php
+function getPostReactions($db, $post_id) {
+    $stmt = $db->prepare("
+        SELECT r.*, u.full_name, u.avatar 
+        FROM reactions r 
+        JOIN users u ON r.user_id = u.id 
+        WHERE r.post_id = ?
+    ");
+    $stmt->bindValue(1, $post_id, SQLITE3_INTEGER);
+    $result = $stmt->execute();
+    
+    $reactions = [];
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        $reactions[] = $row;
+    }
+    return $reactions;
+}
+
+
+function getReactionCounts($db, $post_id) {
+    $stmt = $db->prepare("
+        SELECT emoji, COUNT(*) as count 
+        FROM reactions 
+        WHERE post_id = ? 
+        GROUP BY emoji
+    ");
+    $stmt->bindValue(1, $post_id, SQLITE3_INTEGER);
+    $result = $stmt->execute();
+    
+    $counts = [];
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        $counts[$row['emoji']] = $row['count'];
+    }
+    return $counts;
+}
+function getUserReactions($db, $post_id, $user_id) {
+    $stmt = $db->prepare("SELECT * FROM reactions WHERE post_id = ? AND user_id = ?");
+    $stmt->bindValue(1, $post_id, SQLITE3_INTEGER);
+    $stmt->bindValue(2, $user_id, SQLITE3_INTEGER);
+    $result = $stmt->execute();
+    
+    $reactions = [];
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        $reactions[] = $row;
+    }
+    return $reactions;
+}
+
+function getUserReactionCount($db, $post_id, $user_id) {
+    $stmt = $db->prepare("SELECT COUNT(*) as count FROM reactions WHERE post_id = ? AND user_id = ?");
+    $stmt->bindValue(1, $post_id, SQLITE3_INTEGER);
+    $stmt->bindValue(2, $user_id, SQLITE3_INTEGER);
+    $result = $stmt->execute();
+    $row = $result->fetchArray(SQLITE3_ASSOC);
+    return $row['count'] ?? 0;
 }

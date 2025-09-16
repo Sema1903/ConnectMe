@@ -16,6 +16,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title><?= isset($pageTitle) ? $pageTitle : 'ConnectMe' ?></title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -679,9 +680,9 @@
                 
                 <?php if ($user): ?>
                 <li>
-                    <a href="/friends.php" class="<?= $currentPage === 'friends.php' ? 'active' : '' ?>">
-                        <i class="fas fa-user-friends"></i>
-                        <span>Друзья</span>
+                    <a href="/games.php" class=" <?= $currentPage === 'games.php' ? 'active' : '' ?>">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Миниприложения</span>
                     </a>
                 </li>
                 
@@ -970,7 +971,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Сохраняем текущий масштаб
                 const viewport = document.querySelector('meta[name="viewport"]');
                 if (viewport) {
-                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                    /*viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');*/
                 }
             });
             
@@ -995,7 +996,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Убираем выделение текста при касании
         document.addEventListener('touchstart', function(e) {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-                e.preventDefault();
+                //e.preventDefault();
                 setTimeout(() => {
                     e.target.selectionStart = e.target.selectionEnd = e.target.value.length;
                 }, 0);
@@ -1025,19 +1026,19 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 document.addEventListener('focusin', function(e) {
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         if (e.target.matches('input, textarea, select')) {
-            e.target.style.outline = 'none';
-            e.target.style.boxShadow = 'none';
+            /*e.target.style.outline = 'none';
+            e.target.style.boxShadow = 'none';*/
         }
     }
 });
 
 // Убираем стандартное поведение браузера
-document.addEventListener('touchstart', function(e) {
+/*document.addEventListener('touchstart', function(e) {
     if (e.target.matches('input, textarea, select')) {
         e.target.style.webkitUserSelect = 'none';
         e.target.style.userSelect = 'none';
     }
-}, { passive: true });
+}, { passive: true });*/
 
 // Восстанавливаем selection после фокуса
 document.addEventListener('focus', function(e) {
@@ -1126,4 +1127,130 @@ document.addEventListener('focus', function(e) {
             background: #1a1a1a !important;
         }
     }
+    @media (max-width: 768px) {
+    .navbar {
+        padding-top: max(12px, env(safe-area-inset-top)) !important;
+        padding-left: max(12px, env(safe-area-inset-left)) !important;
+        padding-right: max(12px, env(safe-area-inset-right)) !important;
+    }
+    
+    body {
+        padding-top: env(safe-area-inset-top) !important;
+    }
+    
+    /* Дополнительно: убедитесь, что шапка прижата к верху */
+    header {
+        position: relative;
+    }
+    
+    .navbar {
+        position: sticky;
+        top: 0;
+    }
+}
+@media (prefers-color-scheme: dark) {
+    .sidebar-menu{
+        background: #1a1a1a !important;
+    }
+}
+@media (prefers-color-scheme: light){
+    .sidebar-menu{
+        background: #ffffff !important;
+    }
+    .sidebar-user-name{
+        color: #000000 !important;
+    }
+}
+@media (max-width: 768px) {
+    .sidebar-menu{
+        padding-top: 100px !important;
+    }
+    .navbar {
+        padding-top: max(16px, env(safe-area-inset-top)) !important;
+        padding-bottom: 16px !important;
+        padding-left: max(16px, env(safe-area-inset-left)) !important;
+        padding-right: max(16px, env(safe-area-inset-right)) !important;
+        min-height: 60px !important;
+        height: auto !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+    }
+    
+    body {
+        padding-top: calc(60px + env(safe-area-inset-top)) !important;
+    }
+    
+    /* Увеличиваем логотип */
+    .logo img {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    /* Увеличиваем иконку меню */
+    .mobile-menu-btn {
+        font-size: 24px !important;
+        padding: 10px !important;
+    }
+    
+    /* Увеличиваем высоту навигации */
+    .mobile-bottom-nav {
+        height: 60px !important;
+    }
+    
+    .mobile-nav-icon {
+        font-size: 22px !important;
+    }
+}
+
+/* Дополнительно: делаем шапку более высокой на всех устройствах */
+.navbar {
+    min-height: 56px;
+    height: auto;
+    align-items: center;
+}
+
+.logo img {
+    width: 36px;
+    height: 36px;
+}
+
+.mobile-menu-btn {
+    font-size: 22px;
+}
+@media (max-width: 768px) {
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+    
+    input,
+    textarea,
+    select,
+    button,
+    a {
+        -webkit-tap-highlight-color: transparent !important;
+    }
+    
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="search"],
+    input[type="tel"],
+    input[type="number"],
+    textarea {
+        font-size: 16px !important;
+    }
+}
+
+
+
+
+
+
 </style>
