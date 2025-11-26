@@ -2689,6 +2689,64 @@ if ($profile_user) {
     border-color: #9370DB; /* Фиолетовый для благословения */
 }
 
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                /* Стили для меню поста */
+                                .post-actions-menu {
+                                    position: relative;
+                                }
+
+                                .post-menu-btn {
+                                    background: none;
+                                    border: none;
+                                    padding: 5px 10px;
+                                    border-radius: 50%;
+                                    cursor: pointer;
+                                    color: #666;
+                                }
+
+                                .post-menu-btn:hover {
+                                    background: #f0f0f0;
+                                }
+
+                                .post-menu {
+                                    display: none;
+                                    position: absolute;
+                                    top: 100%;
+                                    right: 0;
+                                    background: white;
+                                    border-radius: 8px;
+                                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                                    z-index: 100;
+                                    min-width: 150px;
+                                }
+
+                                .post-menu.show {
+                                    display: block;
+                                }
+
+                                .menu-item {
+                                    width: 100%;
+                                    padding: 10px 15px;
+                                    border: none;
+                                    background: none;
+                                    text-align: left;
+                                    cursor: pointer;
+                                    color: #333;
+                                }
+
+                                .menu-item:hover {
+                                    background: #f5f5f5;
+                                }
+
+                                .menu-item.delete-post {
+                                    color: #e74c3c;
+                                }
 </style>
 
 <div class="profile-container profile-style-<?= $profile_style ?>">
@@ -2898,22 +2956,46 @@ if ($profile_user) {
             <?php if (!empty($posts)): ?>
                 <?php foreach ($posts as $post): ?>
                 <div class="post" id="post-<?= $post['id'] ?>">
-                    <div class="post-header">
-                        <div class="post-user">
-                            <img src="/assets/images/avatars/<?= $post['avatar'] ?>" 
-                                 alt="<?= htmlspecialchars($post['full_name']) ?>"
-                                 onerror="this.src='/assets/images/avatars/default.png'">
-                            <div class="user-details">
-                                <a href="/profile.php?id=<?= $post['user_id'] ?>" class="name">
-                                    <?= htmlspecialchars($post['full_name']) ?>
-                                </a>
-                                <div class="time">
-                                    <?= time_elapsed_string($post['created_at']) ?> · 
-                                    <i class="fas fa-globe-americas"></i>
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                <!-- В разделе поста, после заголовка -->
+                                <div class="post-header">
+                                    <div class="post-user">
+                                        <img src="/assets/images/avatars/<?= $post['avatar'] ?>"
+                                             alt="<?= htmlspecialchars($post['full_name']) ?>"
+                                             onerror="this.src='/assets/images/avatars/default.png'">
+                                        <div class="user-details">
+                                            <a href="/profile.php?id=<?= $post['user_id'] ?>" class="name">
+                                                <?= htmlspecialchars($post['full_name']) ?>
+                                            </a>
+                                            <div class="time">
+                                                <?= time_elapsed_string($post['created_at']) ?> ·
+                                                <i class="fas fa-globe-americas"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php if ($is_own_profile || ($user && $user['id'] == $post['user_id'])): ?>
+                                    <div class="post-actions-menu">
+                                        <button class="post-menu-btn" onclick="togglePostMenu(<?= $post['id'] ?>)">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <div class="post-menu" id="post-menu-<?= $post['id'] ?>">
+                                            <button class="menu-item delete-post" onclick="deletePost(<?= $post['id'] ?>)">
+                                                <i class="fas fa-trash"></i> Удалить
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
+                                
+                                
+                                
+                                
                     
                     <div class="post-content">
                         <p class="post-text"><?= nl2br(htmlspecialchars($post['content'])) ?></p>
@@ -3826,19 +3908,69 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+                                     
+                                     
+                                     
+                                     
+                                     
+                                     
+                                     // Функция для переключения меню поста
+                                     function togglePostMenu(postId) {
+                                         const menu = document.getElementById(`post-menu-${postId}`);
+                                         const allMenus = document.querySelectorAll('.post-menu');
+                                         
+                                         // Закрываем все остальные меню
+                                         allMenus.forEach(m => {
+                                             if (m.id !== `post-menu-${postId}`) {
+                                                 m.classList.remove('show');
+                                             }
+                                         });
+                                         
+                                         // Переключаем текущее меню
+                                         menu.classList.toggle('show');
+                                     }
+
+                                     // Функция для удаления поста
+                                     function deletePost(postId) {
+                                         if (!confirm('Вы уверены, что хотите удалить этот пост?')) {
+                                             return;
+                                         }
+                                         
+                                         fetch('/actions/delete_post.php', {
+                                             method: 'POST',
+                                             headers: {
+                                                 'Content-Type': 'application/json',
+                                             },
+                                             body: JSON.stringify({ post_id: postId })
+                                         })
+                                         .then(response => response.json())
+                                         .then(data => {
+                                             if (data.success) {
+                                                 // Удаляем пост из DOM
+                                                 const postElement = document.getElementById(`post-${postId}`);
+                                                 if (postElement) {
+                                                     postElement.remove();
+                                                 }
+                                                 showCryptoAlert('success', 'Пост успешно удален');
+                                             } else {
+                                                 showCryptoAlert('error', data.message || 'Ошибка при удалении поста');
+                                             }
+                                         })
+                                         .catch(error => {
+                                             console.error('Error:', error);
+                                             showCryptoAlert('error', 'Произошла ошибка при удалении');
+                                         });
+                                     }
+
+                                     // Закрытие меню при клике вне его
+                                     document.addEventListener('click', function(e) {
+                                         if (!e.target.closest('.post-actions-menu')) {
+                                             document.querySelectorAll('.post-menu').forEach(menu => {
+                                                 menu.classList.remove('show');
+                                             });
+                                         }
+                                     });
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
 <style>
 :root {
     --primary-color: #1877f2;
