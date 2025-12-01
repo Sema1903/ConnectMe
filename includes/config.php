@@ -287,6 +287,20 @@ CREATE TABLE IF NOT EXISTS reactions (
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
     -- Убираем UNIQUE constraint, чтобы разрешить multiple reactions
 );
+CREATE TABLE IF NOT EXISTS mini_apps (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    url TEXT NOT NULL,
+    description TEXT,
+    category TEXT DEFAULT 'utility',
+    icon TEXT DEFAULT 'fas fa-cube',
+    user_id INTEGER NOT NULL,
+    status TEXT DEFAULT 'pending', -- 'pending', 'approved', 'rejected'
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 
 -- Добавляем индекс для быстрого подсчета
 CREATE INDEX IF NOT EXISTS idx_reactions_user_post ON reactions (user_id, post_id);
@@ -376,8 +390,9 @@ function initializeDemoData($db) {
     }
     // Добавьте этот код в функцию initializeDemoData($db) после создания других таблиц
 }
-
-initializeDemoData($db);
+//$dop = $db -> prepare('UPDATE mini_apps SET status = "approved" WHERE name = "Telegram"');
+//$dop -> execute();
+//initializeDemoData($db);
 
 // Функция для получения текущего пользователя
 function getCurrentUser($db) {
