@@ -1,4 +1,5 @@
 <?php
+require_once 'includes/encryption.php';
 require_once 'includes/config.php';
 require_once 'includes/auth.php';
 require_once 'includes/functions.php';
@@ -931,7 +932,7 @@ body.dark .sidebar-item.active {
 /* Улучшение для мобильной версии */
 @media (max-width: 768px) {
     .chat-input{
-        margin-top: 125px !important;
+        margin-bottom: 500px !important;
     }
     .contacts-header{
         margin-top: 25px;
@@ -1089,6 +1090,97 @@ document.addEventListener('DOMContentLoaded', function() {
         font-size: 16px; /* Это предотвращает масштабирование на iOS */
     }
 }
-
 </style>
+
+
+
+
+
+
+
+
+
+
+<script>
+// Отправка сообщения
+document.getElementById('send-message-form')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const input = this.querySelector('input[name="message"]');
+    const message = input.value.trim();
+    
+    if (message) {
+        // Получаем публичный ключ получателя
+        fetch('/actions/get_public_key.php?user_id=<?= $current_friend['id'] ?>')
+            .then(response => response.json())
+            .then(keys => {
+                // Шифруем сообщение на клиенте
+                return fetch('/actions/send_encrypted_message.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        receiver_id: <?= $current_friend['id'] ?? 0 ?>,
+                        encrypted_data: {
+                            // В реальном приложении шифрование должно происходить на клиенте
+                            // Для простоты показываем заглушку
+                            message: message,
+                            timestamp: new Date().toISOString()
+                        }
+                    })
+                });
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const messagesContainer = document.getElementById('chat-messages');
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'message message-outgoing';
+                    messageElement.innerHTML = `
+                        <div class="message-bubble">
+                            🔒 ${message}
+                            <div class="message-time">Только что</div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(messageElement);
+                    input.value = '';
+                    scrollToBottom();
+                }
+            });
+    }
+});
+
+// Функция для получения и отображения сообщений
+function loadEncryptedMessages() {
+    fetch('/actions/get_messages.php?friend_id=<?= $current_friend['id'] ?>')
+        .then(response => response.json())
+        .then(messages => {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+            
+            messages.forEach(msg => {
+                const isOutgoing = msg.sender_id == <?= $user['id'] ?>;
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${isOutgoing ? 'message-outgoing' : 'message-incoming'}`;
+                
+                // В реальном приложении здесь должно быть расшифрование на клиенте
+                const content = msg.encrypted_content ? '🔒 Сообщение зашифровано' : msg.content;
+                
+                messageElement.innerHTML = `
+                    <div class="message-bubble">
+                        ${content}
+                        <div class="message-time">
+                            ${new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(messageElement);
+            });
+            scrollToBottom();
+        });
+}
+
+// Загружаем сообщения при открытии страницы
+loadEncryptedMessages();
+</script>
 <?php require_once 'includes/footer.php'; ?>

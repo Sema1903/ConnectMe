@@ -266,6 +266,7 @@ CREATE TABLE IF NOT EXISTS challenges (
     FOREIGN KEY (winner_id) REFERENCES users(id)
 );
 
+
 -- Challenge bets table
 CREATE TABLE IF NOT EXISTS challenge_bets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -319,6 +320,15 @@ CREATE INDEX IF NOT EXISTS idx_reactions_user_post ON reactions (user_id, post_i
 --('Серебряное фофрмление', 'Офоормление страницы 2-го уровня', 'image', 20, 5, '2nd lavel'),
 --('Золотой оформление', 'Офоормление страницы 1-го уровня', 'star', 50, 3, '1st lavel'),
 --('VIP-оформление', 'Эксклюзивное оформление страницы', 'crown', 100, 1, 'premium');
+
+
+
+
+
+
+
+
+
     ");
 } catch (Exception $e) {
     die("Ошибка подключения к базе данных: " . $e->getMessage());
@@ -390,9 +400,9 @@ function initializeDemoData($db) {
     }
     // Добавьте этот код в функцию initializeDemoData($db) после создания других таблиц
 }
-//$dop = $db -> prepare('UPDATE mini_apps SET status = "approved" WHERE name = "Telegram"');
+//$dop = $db -> prepare('UPDATE mini_apps SET status = "approved" WHERE name = "Google"');
 //$dop -> execute();
-//initializeDemoData($db);
+initializeDemoData($db);
 
 // Функция для получения текущего пользователя
 function getCurrentUser($db) {
@@ -407,3 +417,41 @@ function getCurrentUser($db) {
     return $result->fetchArray(SQLITE3_ASSOC);
 }
 // Проверка и создание тестовых данных (удалите после проверки)
+// В конец SQL-запросов в config.php добавляем:
+// В конец SQL в config.php добавляем:
+$db->exec("
+    -- Простая таблица ботов
+    CREATE TABLE IF NOT EXISTS bots (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        token TEXT UNIQUE NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    -- Поле для отметки бота в постах
+   -- ALTER TABLE posts ADD COLUMN is_bot INTEGER DEFAULT 0;
+");
+
+
+
+
+
+
+
+
+
+
+// В config.php добавим в CREATE TABLE:
+$db->exec("
+    CREATE TABLE IF NOT EXISTS user_encryption_keys (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        public_key TEXT NOT NULL,
+        private_key_encrypted TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        UNIQUE(user_id)
+    );
+    -- Изменяем таблицу messages для хранения зашифрованных сообщений
+--ALTER TABLE messages ADD COLUMN encrypted_content TEXT;
+");

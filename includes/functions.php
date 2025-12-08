@@ -650,16 +650,6 @@ function hasUserVoted($db, $poll_id, $user_id) {
     $stmt->bindValue(2, $user_id, SQLITE3_INTEGER);
     return (bool) $stmt->execute()->fetchArray();
 }
-
-
-
-
-
-
-
-
-
-
 // Добавьте эти функции в includes/functions.php
 function getPostReactions($db, $post_id) {
     $stmt = $db->prepare("
@@ -715,4 +705,92 @@ function getUserReactionCount($db, $post_id, $user_id) {
     $result = $stmt->execute();
     $row = $result->fetchArray(SQLITE3_ASSOC);
     return $row['count'] ?? 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// В конец файла functions.php добавляем:
+
+// Функции для API ботов
+function authenticateBot($db, $bot_token) {
+    $stmt = $db->prepare("SELECT * FROM bots WHERE token = ? AND is_active = 1");
+    $stmt->bindValue(1, $bot_token, SQLITE3_TEXT);
+    $result = $stmt->execute();
+    return $result->fetchArray(SQLITE3_ASSOC);
+}
+
+function createBotPost($db, $bot_id, $content, $user_id = null, $image = null) {
+    $stmt = $db->prepare("INSERT INTO posts (user_id, content, image, created_at, is_bot_post, bot_id) 
+                         VALUES (?, ?, ?, datetime('now'), 1, ?)");
+    $stmt->bindValue(1, $user_id, SQLITE3_INTEGER);
+    $stmt->bindValue(2, $content, SQLITE3_TEXT);
+    $stmt->bindValue(3, $image, SQLITE3_TEXT);
+    $stmt->bindValue(4, $bot_id, SQLITE3_INTEGER);
+    return $stmt->execute();
+}
+
+function sendBotMessage($db, $bot_id, $receiver_id, $content) {
+    $stmt = $db->prepare("INSERT INTO messages (sender_id, receiver_id, content, created_at, is_bot_message) 
+                         VALUES (?, ?, ?, datetime('now'), 1)");
+    $stmt->bindValue(1, $bot_id, SQLITE3_INTEGER);
+    $stmt->bindValue(2, $receiver_id, SQLITE3_INTEGER);
+    $stmt->bindValue(3, $content, SQLITE3_TEXT);
+    return $stmt->execute();
+}
+
+function getBotStats($db, $bot_id) {
+    $stats = [];
+    
+    // Количество постов
+    $stmt = $db->prepare("SELECT COUNT(*) as post_count FROM posts WHERE bot_id = ?");
+    $stmt->bindValue(1, $bot_id, SQLITE3_INTEGER);
+    $result = $stmt->execute();
+    $stats['post_count'] = $result->fetchArray(SQLITE3_ASSOC)['post_count'];
+    
+    // Количество сообщений
+    $stmt = $db->prepare("SELECT COUNT(*) as message_count FROM messages WHERE sender_id = ? AND is_bot_message = 1");
+    $stmt->bindValue(1, $bot_id, SQLITE3_INTEGER);
+    $result = $stmt->execute();
+    $stats['message_count'] = $result->fetchArray(SQLITE3_ASSOC)['message_count'];
+    
+    // Последняя активность
+    $stmt = $db->prepare("SELECT MAX(created_at) as last_activity FROM (
+                          SELECT created_at FROM posts WHERE bot_id = ?
+                          UNION ALL
+                          SELECT created_at FROM messages WHERE sender_id = ? AND is_bot_message = 1
+                      )");
+    $stmt->bindValue(1, $bot_id, SQLITE3_INTEGER);
+    $stmt->bindValue(2, $bot_id, SQLITE3_INTEGER);
+    $result = $stmt->execute();
+    $stats['last_activity'] = $result->fetchArray(SQLITE3_ASSOC)['last_activity'];
+    
+    return $stats;
+}
+
+function getBotByUsername($db, $bot_username) {
+    $stmt = $db->prepare("SELECT * FROM bots WHERE username = ?");
+    $stmt->bindValue(1, $bot_username, SQLITE3_TEXT);
+    $result = $stmt->execute();
+    return $result->fetchArray(SQLITE3_ASSOC);
+}
+
+function registerBotWebhook($db, $bot_id, $webhook_url, $events) {
+    $stmt = $db->prepare("INSERT OR REPLACE INTO bot_webhooks (bot_id, webhook_url, events, created_at) 
+                         VALUES (?, ?, ?, datetime('now'))");
+    $stmt->bindValue(1, $bot_id, SQLITE3_INTEGER);
+    $stmt->bindValue(2, $webhook_url, SQLITE3_TEXT);
+    $stmt->bindValue(3, json_encode($events), SQLITE3_TEXT);
+    return $stmt->execute();
 }
